@@ -73,6 +73,18 @@
   --color-ink: var(--color-ink-black);
   --color-line: var(--color-faint-border);
 
+  /* Text on an ink fill (primary button, active pill). Ink flips in dark. */
+  --color-on-ink: #ffffff;
+
+  /* Neutral fill behind product photos (so photos never sit on a white box) */
+  --color-tile: var(--color-canvas-mist);
+
+  /* Footer: inverse block in light, plain surface in dark */
+  --color-footer: var(--color-ink-black);
+  --color-on-footer: #ffffff;
+  --color-footer-muted: var(--color-cool-stone);
+  --color-footer-line: var(--color-slate-ink);
+
   /* Accent: the ONE brand color. Change the brand color here only. */
   --color-accent: #5433eb;
   --color-accent-hover: #4526c9;
@@ -87,7 +99,7 @@
   --color-input-border: rgba(0, 0, 0, 0.1);
 
   /* Semantic colors + wash variants. Sale badge = error. */
-  --color-success: #1a7f4b;
+  --color-success: #177040;
   --color-success-wash: #dff3e8;
   --color-error: #c4291c;
   --color-error-wash: #fde7e4;
@@ -155,6 +167,57 @@
 }
 html[dir="rtl"] {
   --dir-sign: -1;
+}
+
+/* ==========================================================================
+   Dark theme: token overrides only, no per-component colors. Applied when
+   <html data-theme="dark"> (see src/lib/theme.ts). Never applied when
+   printing. Every text/background pair is checked by `pnpm contrast:check`.
+   ========================================================================== */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@media not print {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-canvas: #0f1011;
+    --color-surface: #18191b;
+    --color-ink: #f2f4f5;
+    --color-line: #2a2b2e;
+    --color-on-ink: #0f1011;
+    --color-tile: #232427;
+    --color-footer: var(--color-surface);
+    --color-on-footer: #f2f4f5;
+    --color-footer-muted: #a3a19f;
+    --color-footer-line: #2a2b2e;
+
+    /* Kit grays, re-tuned: slate = hover fill of an ink fill, stone = quiet marks */
+    --color-slate-ink: #d5d7d9;
+    --color-cool-stone: #4a4c50;
+
+    --color-accent: #8571f2;
+    --color-accent-hover: #9a88f5;
+    --color-accent-wash: #2a2250;
+    --color-on-accent: #0f1011;
+    --color-muted: #a3a19f;
+    --color-input-border: rgba(255, 255, 255, 0.16);
+
+    --color-success: #4cc38a;
+    --color-success-wash: #11281d;
+    --color-error: #f27b70;
+    --color-error-wash: #2f1614;
+    --color-warning: #e3a53f;
+    --color-warning-wash: #2c2210;
+    --color-info: #6fa5f7;
+    --color-info-wash: #142339;
+
+    --color-overlay: rgba(0, 0, 0, 0.6);
+
+    --shadow-sm: rgba(0, 0, 0, 0.4) 0px 2px 8px 0px;
+    --shadow-sm-2: rgba(0, 0, 0, 0.5) 0px 4px 6px -1px, rgba(0, 0, 0, 0.5) 0px 2px 4px -2px;
+    --shadow-lg: rgba(0, 0, 0, 0.55) 0px 4px 24px 0px;
+    --shadow-lg-2: rgba(133, 113, 242, 0.34) 0px 4px 24px 0px;
+  }
 }
 
 @keyframes drawer-end {

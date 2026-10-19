@@ -13,6 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "i18n:check": "tsx scripts/check-i18n.ts",
+    "contrast:check": "tsx scripts/check-contrast.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -27,15 +27,15 @@ export async function Footer() {
   const index = await getCategoryIndex();
 
   const link =
-    "inline-flex min-h-44 items-center rounded-pill text-body text-cool-stone hover:text-on-accent hover:underline";
+    "inline-flex min-h-44 items-center rounded-pill text-body text-footer-muted hover:text-on-footer hover:underline";
 
   return (
-    <footer className="mt-64 bg-ink text-on-accent">
+    <footer className="mt-64 bg-footer text-on-footer">
       <div className="mx-auto grid max-w-page gap-32 px-16 py-48 md:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-12">
           <p className="text-title font-semibold tracking-tight">{siteConfig.name}</p>
-          <p className="text-body text-cool-stone">{t("tagline")}</p>
-          <p className="inline-flex items-center gap-8 text-body text-cool-stone">
+          <p className="text-body text-footer-muted">{t("tagline")}</p>
+          <p className="inline-flex items-center gap-8 text-body text-footer-muted">
             <Banknote aria-hidden="true" strokeWidth={1.5} className="size-20 shrink-0" />
             {t("payment")}
           </p>
@@ -109,8 +109,8 @@ export async function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-slate-ink">
-        <p className="mx-auto max-w-page px-16 py-20 text-body-sm text-cool-stone">
+      <div className="border-t border-footer-line">
+        <p className="mx-auto max-w-page px-16 py-20 text-body-sm text-footer-muted">
           {t("copyright", { year: String(new Date().getFullYear()), brand: siteConfig.name })}
         </p>
       </div>

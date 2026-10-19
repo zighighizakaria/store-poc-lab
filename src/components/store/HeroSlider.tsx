@@ -71,7 +71,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               role="group"
               aria-roledescription="slide"
               aria-label={t("slideOf", { current: i + 1, total: count })}
-              className="relative aspect-[4/5] w-full shrink-0 snap-start bg-canvas md:aspect-[5/2]"
+              className="relative aspect-[4/5] w-full shrink-0 snap-start bg-tile md:aspect-[5/2]"
             >
               <SlideImage slide={slide} priority={i === 0} />
               <div className="absolute inset-x-16 bottom-16 flex flex-col gap-8 rounded-card bg-surface p-20 shadow-sm-2 md:inset-x-auto md:start-32 md:bottom-32 md:max-w-modal md:gap-12 md:p-24">

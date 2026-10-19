@@ -165,7 +165,7 @@ export function CartDrawer() {
                   <Link
                     href={line.href}
                     onClick={close}
-                    className="relative block h-[96px] w-[76px] shrink-0 overflow-hidden rounded-image bg-canvas"
+                    className="relative block h-[96px] w-[76px] shrink-0 overflow-hidden rounded-image bg-tile"
                   >
                     {line.image ? (
                       <Image

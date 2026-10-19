@@ -108,7 +108,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
         <ul className="mt-16 flex flex-col divide-y divide-line">
           {order.items.map((item) => (
             <li key={item.id} className="flex gap-12 py-12 first:pt-0">
-              <div className="relative h-[72px] w-[56px] shrink-0 overflow-hidden rounded-image bg-canvas">
+              <div className="relative h-[72px] w-[56px] shrink-0 overflow-hidden rounded-image bg-tile">
                 {item.image ? (
                   <Image
                     src={item.image}

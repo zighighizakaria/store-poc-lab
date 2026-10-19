@@ -23,7 +23,7 @@ export function ProductImageTile({
   return (
     <div
       className={cn(
-        "relative aspect-[4/5] overflow-hidden rounded-image bg-canvas",
+        "relative aspect-[4/5] overflow-hidden rounded-image bg-tile",
         className,
       )}
       {...rest}

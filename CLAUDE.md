@@ -27,7 +27,8 @@ Brand name is a placeholder ("Brand"); never hardcode it — read it from `site.
 
 ## Design
 - The UI kit in `../ui-ux/` (`DESIGN (1).md`, `tokens.json`, `variables.css`, `theme.css`) is the source of truth. Use tokens, never raw hex/px values that a token covers.
-- Light theme only. One accent color token (`--color-accent`, default violet `#5433eb`) — change brand color in one place.
+- Light and dark themes (preference light / dark / system, cookie `theme`, `data-theme` on `<html>`). **Colors only via tokens; check both themes.** Dark values are token overrides in `src/styles/theme.css`; no `bg-white`/`text-black`/hex/rgba in components. Run `pnpm contrast:check` after touching colors. Emails stay light.
+- One accent color token (`--color-accent`, default violet `#5433eb`) — change brand color in one place.
 - Shapes: pills (9999px) for buttons/inputs/chips, 28px card radius, 20px inner image radius.
 - The kit has no component code: build components from its specs, and when the kit lacks something (cart drawer, forms, badges, modals), extend it in the same style and add the new token to `src/styles/theme.css`, not inline.
 - Mobile-first. Every page must work at 360px width.
@@ -49,7 +50,7 @@ Brand name is a placeholder ("Brand"); never hardcode it — read it from `site.
 - Sale page is automatic: products where `compareAtPrice > price`. No manual sale collection.
 - Category = product type tree (one per product). Collection = marketing set (many-to-many).
 - Variants = size × color, each with its own SKU and stock.
-- Out of scope v1 (do not build unless asked): promo codes, customer accounts, card payment, SMS/WhatsApp API, AI translation, women's section, dark mode.
+- Out of scope v1 (do not build unless asked): promo codes, customer accounts, card payment, SMS/WhatsApp API, AI translation, women's section.
 
 ## Working rules
 - Validate all input with Zod on the server (server actions / route handlers). Admin routes and actions check the session server-side.

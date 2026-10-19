@@ -7,6 +7,12 @@
     "ar": "العربية",
     "en": "English"
   },
+  "theme": {
+    "group": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
   "common": {
     "home": "Accueil",
     "breadcrumb": "Fil d'Ariane"

@@ -10,7 +10,7 @@ function pillClasses(selected: boolean) {
   return cn(
     base,
     selected
-      ? "border-ink bg-ink text-on-accent"
+      ? "border-ink bg-ink text-on-ink"
       : "border-line bg-surface text-ink hover:bg-canvas",
   );
 }

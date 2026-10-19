@@ -7,6 +7,12 @@
     "ar": "العربية",
     "en": "English"
   },
+  "theme": {
+    "group": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "common": {
     "home": "Home",
     "breadcrumb": "Breadcrumb"

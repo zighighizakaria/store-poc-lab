@@ -5,7 +5,7 @@ Source of truth: `../ui-ux/` (relative to `store/`):
 - `tokens.json` — W3C tokens. `variables.css` — CSS custom properties. `theme.css` — Tailwind v4 `@theme`.
 Copy `theme.css` into `src/styles/theme.css` and extend there. Read `DESIGN (1).md` before building a new visual component.
 
-The kit was extracted from shop.app: it is a spec, not code. It has no components, no dark mode, no RTL, no icon set, no breakpoints.
+The kit was extracted from shop.app: it is a spec, not code. It has no components, no RTL, no icon set, no breakpoints. Dark mode is a project extension (see Dark palette).
 
 ## Core tokens (summary — exact values in the kit files)
 - Colors: canvas `#f2f4f5`, surface white `#ffffff`, ink `#000000`, border `#ebebeb`, muted text `#787574`, stone `#cccccc`, fog `#acb0aa`, slate `#332f2d`, ash `#665a54`, accent violet `#5433eb`, accent wash `#c0b5f3`.
@@ -36,5 +36,12 @@ Not used: Sidebar Nav Rail (we use a top header), App Download Banner.
 - Motion: 150–250ms ease-out; respect `prefers-reduced-motion`.
 - Icons: one outline icon set (lucide-react), stroke ink, 1.5px.
 
+## Dark palette
+Token overrides only, in `src/styles/theme.css` under `:root[data-theme="dark"]` (not applied when printing). Components never hardcode colors: `bg-surface`, `text-ink`, etc. flip automatically. Tailwind `dark:` is available (`@custom-variant dark` on `[data-theme=dark]`) but should rarely be needed.
+- Theme state: light / dark / system (default). Cookie `theme`; server layouts (`[locale]` and `admin`) set `data-theme` on `<html>`; for system, an inline script in `<head>` resolves `prefers-color-scheme` before paint. `ThemeProvider` + `ThemeToggle` (storefront header and mobile menu, admin topbar and drawer). Emails stay light.
+- Values: canvas `#0f1011`, surface `#18191b`, ink `#f2f4f5`, line `#2a2b2e`, muted `#a3a19f`, accent `#8571f2` (hover `#9a88f5`, wash `#2a2250`), on-accent `#0f1011`; success `#4cc38a`, error `#f27b70`, warning `#e3a53f`, info `#6fa5f7` with dark washes.
+- Extra tokens: `on-ink` (text on an ink fill; use it, not `on-accent`, on `bg-ink`/`bg-slate-ink`), `tile` (neutral fill behind photos), `footer`, `on-footer`, `footer-muted`, `footer-line`. `slate-ink` is the hover fill of an ink fill in both themes.
+- Rule: if a component needs a new color, add a token with a light and a dark value, then add its pairs to `scripts/check-contrast.ts`.
+
 ## Accessibility
-Contrast ≥ 4.5:1 for text — check muted `#787574` on canvas and white on violet before use; darken via token if needed. Tap targets ≥ 44px.
+Contrast ≥ 4.5:1 for text — check muted `#787574` on canvas and white on violet before use; darken via token if needed. `pnpm contrast:check` verifies every text/background token pair in both themes. Tap targets ≥ 44px.

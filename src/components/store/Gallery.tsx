@@ -27,7 +27,7 @@ export function Gallery({ images }: { images: GalleryImage[] }) {
                 aria-label={t("showImage", { current: i + 1, total })}
                 aria-current={index === i ? "true" : undefined}
                 className={cn(
-                  "relative block aspect-[4/5] w-full overflow-hidden rounded-xl border-2 bg-canvas transition-colors duration-fast",
+                  "relative block aspect-[4/5] w-full overflow-hidden rounded-xl border-2 bg-tile transition-colors duration-fast",
                   index === i ? "border-ink" : "border-transparent hover:border-cool-stone",
                 )}
               >
@@ -50,7 +50,7 @@ export function Gallery({ images }: { images: GalleryImage[] }) {
               role="group"
               aria-roledescription="slide"
               aria-label={t("showImage", { current: i + 1, total })}
-              className="relative aspect-[4/5] w-full shrink-0 snap-center bg-canvas"
+              className="relative aspect-[4/5] w-full shrink-0 snap-center bg-tile"
             >
               <Image
                 src={image.url}

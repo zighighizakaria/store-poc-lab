@@ -45,7 +45,7 @@ function Switcher({
             aria-current={active ? "true" : undefined}
             className={cn(
               "inline-flex min-h-44 min-w-44 items-center justify-center rounded-pill px-12 text-body font-semibold uppercase",
-              active ? "bg-ink text-on-accent" : "text-ink hover:bg-canvas",
+              active ? "bg-ink text-on-ink" : "text-ink hover:bg-canvas",
             )}
           >
             {code}

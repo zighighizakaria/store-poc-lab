@@ -308,7 +308,7 @@ export function CheckoutForm({ idempotencyKey, cities }: Props) {
                   <li key={line.variantId} className="flex gap-12 py-12 first:pt-0 last:pb-0">
                     <Link
                       href={line.href}
-                      className="relative block h-[72px] w-[56px] shrink-0 overflow-hidden rounded-image bg-canvas"
+                      className="relative block h-[72px] w-[56px] shrink-0 overflow-hidden rounded-image bg-tile"
                     >
                       {line.image ? (
                         <Image
