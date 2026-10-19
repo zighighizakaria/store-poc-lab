@@ -148,7 +148,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                           />
                         </td>
                         <td className={tdClass}>
-                          <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-canvas">
+                          <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-tile">
                             {image ? <Image src={mediaUrl(image.mediaAsset.storageKey)} alt="" fill sizes="40px" className="object-cover" /> : null}
                           </div>
                         </td>

@@ -170,7 +170,7 @@ export function SearchBox({ className }: { className?: string }) {
                     active === index && "bg-canvas",
                   )}
                 >
-                  <span className="relative block h-48 w-40 shrink-0 overflow-hidden rounded-xl bg-canvas">
+                  <span className="relative block h-48 w-40 shrink-0 overflow-hidden rounded-xl bg-tile">
                     {item.image ? (
                       <Image
                         src={item.image}

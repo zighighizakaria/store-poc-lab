@@ -28,7 +28,7 @@ export function MediaField({ name, label, value = null, required = false, help }
       <span className="text-body font-medium">{label}</span>
       <input type="hidden" name={name} value={current?.id ?? ""} />
       <div className="flex flex-wrap items-center gap-12">
-        <div className="relative h-64 w-64 shrink-0 overflow-hidden rounded-image bg-canvas">
+        <div className="relative h-64 w-64 shrink-0 overflow-hidden rounded-image bg-tile">
           {current ? <Image src={current.url} alt="" fill sizes="64px" className="object-cover" /> : null}
         </div>
         <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>

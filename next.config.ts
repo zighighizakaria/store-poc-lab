@@ -4,6 +4,10 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  images: {
+    // Legacy rows (pre media library) and old order snapshots may still point here.
+    remotePatterns: [{ protocol: "https", hostname: "placehold.co" }],
+  },
   experimental: {
     // Admin image uploads go through server actions, one file (max 5 MB) per
     // request. The default limit is 1 MB.

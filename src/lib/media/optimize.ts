@@ -18,7 +18,7 @@ export type OptimizedImage = {
  * Throws when the bytes cannot be decoded as an image.
  */
 export async function optimizeImage(input: Buffer): Promise<OptimizedImage> {
-  const { data, info } = await sharp(input, { limitInputPixels: 100_000_000 })
+  const { data, info } = await sharp(input, { limitInputPixels: 40_000_000 })
     .rotate() // sharp strips every other piece of metadata by default
     .resize({ width: MAX_IMAGE_SIDE, height: MAX_IMAGE_SIDE, fit: "inside", withoutEnlargement: true })
     .webp({ quality: WEBP_QUALITY })

@@ -51,7 +51,7 @@ function ImageCard({
 }) {
   return (
     <li className="flex flex-col gap-8 rounded-image border border-line p-8">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-canvas">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-tile">
         <Image src={image.url} alt={image.alt} fill sizes="200px" className="object-cover" />
         <span className="absolute start-6 top-6 rounded-pill bg-surface px-8 py-4 text-caption font-semibold shadow-sm">
           {index + 1}

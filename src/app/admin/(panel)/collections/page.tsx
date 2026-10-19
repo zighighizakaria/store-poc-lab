@@ -64,7 +64,7 @@ export default async function CollectionsPage({ searchParams }: Props) {
                   return (
                     <tr key={collection.id}>
                       <td className={tdClass}>
-                        <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-canvas">
+                        <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-tile">
                           {collection.mediaAsset ? (
                             <Image src={mediaUrl(collection.mediaAsset.storageKey)} alt="" fill sizes="40px" className="object-cover" />
                           ) : null}

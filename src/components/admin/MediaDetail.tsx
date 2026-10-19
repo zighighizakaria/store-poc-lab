@@ -82,7 +82,7 @@ export function MediaDetail({ asset, usage }: { asset: MediaDetailData; usage: M
   const dimensions = asset.width && asset.height ? `${asset.width} × ${asset.height} px` : "inconnues";
   return (
     <div className="flex flex-col gap-16">
-      <div className="relative aspect-square overflow-hidden rounded-image bg-canvas">
+      <div className="relative aspect-square overflow-hidden rounded-image bg-tile">
         <Image src={asset.url} alt={asset.alt.fr} fill sizes="360px" className="object-contain" />
       </div>
 

@@ -121,7 +121,7 @@ function PickerBody({
                     aria-pressed={multiple ? isSelected : undefined}
                     title={card.name}
                     className={cn(
-                      "relative block aspect-square w-full overflow-hidden rounded-image border bg-canvas",
+                      "relative block aspect-square w-full overflow-hidden rounded-image border bg-tile",
                       isSelected ? "border-accent ring-2 ring-accent" : "border-line hover:border-ink",
                     )}
                   >

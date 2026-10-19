@@ -68,10 +68,16 @@ export async function replaceMediaFile(id: string, file: File) {
   if (!existing) return { ok: false as const, error: "Média introuvable." };
   const prepared = await prepare(file);
   if (!prepared.ok) return prepared;
-  const asset = await db.mediaAsset.update({
-    where: { id },
+  // Compare-and-swap on the old key: a concurrent replace or delete wins cleanly.
+  const updated = await db.mediaAsset.updateMany({
+    where: { id, storageKey: existing.storageKey },
     data: { ...fileFields(prepared.value), originalName: cleanName(file.name) },
   });
+  if (updated.count === 0) {
+    await removeStoredFile(prepared.value.storageKey);
+    return { ok: false as const, error: "Le média a été modifié entre-temps. Réessayez." };
+  }
+  const asset = await db.mediaAsset.findUniqueOrThrow({ where: { id } });
   await removeFileUnlessOrdered(existing.storageKey);
   return { ok: true as const, value: asset };
 }

@@ -98,7 +98,7 @@ export default async function MediaLibraryPage({ searchParams }: Props) {
                         card.id === selectedId ? "border-accent ring-2 ring-accent" : "border-line",
                       )}
                     >
-                      <span className="relative block aspect-square overflow-hidden rounded-lg bg-canvas">
+                      <span className="relative block aspect-square overflow-hidden rounded-lg bg-tile">
                         <Image src={card.url} alt={card.alt} fill sizes="200px" className="object-cover" />
                       </span>
                       <span className="truncate text-body-sm" title={card.name}>

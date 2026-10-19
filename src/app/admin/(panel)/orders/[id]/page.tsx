@@ -84,7 +84,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                       <tr key={item.id}>
                         <td className={tdClass}>
                           <div className="flex items-center gap-12">
-                            <div className="relative h-48 w-40 shrink-0 overflow-hidden rounded-lg bg-canvas">
+                            <div className="relative h-48 w-40 shrink-0 overflow-hidden rounded-lg bg-tile">
                               {item.image ? (
                                 <Image src={item.image} alt="" fill sizes="40px" className="object-cover" />
                               ) : null}
