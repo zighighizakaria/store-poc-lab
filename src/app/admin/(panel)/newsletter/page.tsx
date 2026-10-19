@@ -31,7 +31,7 @@ export default async function NewsletterPage({ searchParams }: Props) {
           // eslint-disable-next-line @next/next/no-html-link-for-pages
           <a
             href="/admin/newsletter/export"
-            className="inline-flex min-h-44 items-center justify-center rounded-pill bg-ink px-20 text-body font-medium text-on-accent hover:bg-slate-ink"
+            className="inline-flex min-h-44 items-center justify-center rounded-pill bg-ink px-20 text-body font-medium text-on-ink hover:bg-slate-ink"
           >
             Exporter en CSV
           </a>

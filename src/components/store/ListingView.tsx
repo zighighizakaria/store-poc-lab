@@ -159,7 +159,7 @@ export async function ListingView({
                 {hasActiveFilters(query) ? (
                   <Link
                     href={clearAllHref}
-                    className="mt-16 inline-flex min-h-44 items-center rounded-pill bg-ink px-20 text-body font-medium text-on-accent hover:bg-slate-ink"
+                    className="mt-16 inline-flex min-h-44 items-center rounded-pill bg-ink px-20 text-body font-medium text-on-ink hover:bg-slate-ink"
                   >
                     {t("clearAll")}
                   </Link>

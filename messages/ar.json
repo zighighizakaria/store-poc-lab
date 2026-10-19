@@ -7,6 +7,12 @@
     "ar": "العربية",
     "en": "English"
   },
+  "theme": {
+    "group": "المظهر",
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "النظام"
+  },
   "common": {
     "home": "الرئيسية",
     "breadcrumb": "مسار التنقل"

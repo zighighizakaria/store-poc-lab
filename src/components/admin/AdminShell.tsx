@@ -22,7 +22,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Drawer } from "@/components/ui/Drawer";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/cn";
+
+const THEME_LABELS = { group: "Thème", light: "Clair", dark: "Sombre", system: "Système" };
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -59,7 +62,7 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex min-h-44 items-center gap-12 rounded-pill px-16 text-body-lg font-medium transition-colors duration-fast",
-              active ? "bg-ink text-on-accent" : "text-ink hover:bg-canvas",
+              active ? "bg-ink text-on-ink" : "text-ink hover:bg-canvas",
             )}
           >
             <Icon aria-hidden="true" strokeWidth={1.5} className="size-20 shrink-0" />
@@ -105,6 +108,7 @@ export function AdminShell({ brand, adminName, logoutAction, children }: Props) 
             <span className="hidden text-body text-muted md:inline">Back-office</span>
           </div>
           <div className="flex items-center gap-8">
+            <ThemeToggle labels={THEME_LABELS} className="hidden sm:flex" />
             <span className="max-w-[160px] truncate text-body font-medium sm:max-w-none">{adminName}</span>
             <form action={logoutAction}>
               <button
@@ -122,7 +126,14 @@ export function AdminShell({ brand, adminName, logoutAction, children }: Props) 
         <main className="min-w-0 flex-1 p-16 md:p-24">{children}</main>
       </div>
 
-      <Drawer open={open} onClose={() => setOpen(false)} title={brand} closeLabel="Fermer le menu" side="start">
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title={brand}
+        closeLabel="Fermer le menu"
+        side="start"
+        footer={<ThemeToggle labels={THEME_LABELS} />}
+      >
         <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
       </Drawer>
     </div>

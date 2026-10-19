@@ -30,7 +30,7 @@ type Props = {
 
 function Choice({ name, value, label, swatch }: { name: string; value: string; label: string; swatch?: string }) {
   return (
-    <label className="relative inline-flex min-h-44 cursor-pointer items-center gap-8 rounded-pill border border-line bg-surface px-16 text-body has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-on-accent">
+    <label className="relative inline-flex min-h-44 cursor-pointer items-center gap-8 rounded-pill border border-line bg-surface px-16 text-body has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-on-ink">
       <input type="checkbox" name={name} value={value} className="sr-only" />
       {swatch ? (
         <span aria-hidden="true" style={{ backgroundColor: swatch }} className="size-16 rounded-pill border border-input-border" />

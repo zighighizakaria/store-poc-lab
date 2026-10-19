@@ -6,7 +6,7 @@ export type BadgeVariant = "sale" | "new" | "out-of-stock" | "low-stock";
 const variants: Record<BadgeVariant, string> = {
   sale: "bg-error text-on-accent",
   new: "bg-surface text-ink shadow-sm",
-  "out-of-stock": "bg-slate-ink text-on-accent",
+  "out-of-stock": "bg-slate-ink text-on-ink",
   "low-stock": "bg-warning-wash text-warning",
 };
 

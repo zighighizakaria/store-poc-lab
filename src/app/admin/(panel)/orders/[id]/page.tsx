@@ -170,7 +170,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <div className="mt-12 flex flex-wrap gap-8">
                 <a
                   href={`tel:${order.phone}`}
-                  className="inline-flex min-h-44 items-center gap-8 rounded-pill bg-ink px-20 text-body font-medium text-on-accent hover:bg-slate-ink"
+                  className="inline-flex min-h-44 items-center gap-8 rounded-pill bg-ink px-20 text-body font-medium text-on-ink hover:bg-slate-ink"
                 >
                   <Phone aria-hidden="true" strokeWidth={1.5} className="size-16" />
                   Appeler

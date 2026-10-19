@@ -61,7 +61,7 @@ export async function Pagination({ page, totalPages, hrefFor }: Props) {
                 aria-current={entry === page ? "page" : undefined}
                 className={cn(
                   item,
-                  entry === page ? "bg-ink text-on-accent" : "hover:bg-surface",
+                  entry === page ? "bg-ink text-on-ink" : "hover:bg-surface",
                 )}
               >
                 <span dir="ltr">{entry}</span>

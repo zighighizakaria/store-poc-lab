@@ -80,7 +80,7 @@ export function LocaleTabs({ fields, initial, mainField = "name" }: Props) {
               onClick={() => setActive(locale)}
               className={cn(
                 "inline-flex min-h-44 items-center gap-8 rounded-pill border px-16 text-body font-medium transition-colors duration-fast",
-                selected ? "border-ink bg-ink text-on-accent" : "border-line bg-surface hover:bg-canvas",
+                selected ? "border-ink bg-ink text-on-ink" : "border-line bg-surface hover:bg-canvas",
               )}
             >
               {LOCALE_LABELS[locale]}

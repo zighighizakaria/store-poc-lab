@@ -180,7 +180,7 @@ function FilterPanel({
                           dir="ltr"
                           className={cn(
                             "text-caption",
-                            selected ? "text-on-accent" : "text-muted",
+                            selected ? "text-on-ink" : "text-muted",
                           )}
                         >
                           {size.count}

@@ -42,7 +42,7 @@ export default async function BannersPage({ searchParams }: Props) {
               <li key={banner.id}>
                 <Panel>
                   <div className="flex flex-wrap items-center gap-12">
-                    <div className="relative h-64 w-[160px] shrink-0 overflow-hidden rounded-image bg-canvas">
+                    <div className="relative h-64 w-[160px] shrink-0 overflow-hidden rounded-image bg-tile">
                       <Image src={banner.imageDesktop} alt="" fill sizes="160px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1 basis-[160px]">

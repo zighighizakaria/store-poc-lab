@@ -10,7 +10,7 @@ import type { NavItem } from "./MainNav";
 
 type Props = {
   items: NavItem[];
-  /** Language switcher (server-built element). */
+  /** Language switcher and theme toggle (server-built element). */
   footer: ReactNode;
 };
 
