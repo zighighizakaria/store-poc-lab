@@ -1,0 +1,450 @@
+// Money is stored as integer centimes (MAD x 100). Never floats.
+// Translatable content lives in *Translation tables keyed by (parentId, locale).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum Locale {
+  fr
+  ar
+  en
+}
+
+enum Audience {
+  MEN
+  WOMEN
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum SizeGroup {
+  TOP
+  BOTTOM
+  SHOES
+  ONE_SIZE
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentMethod {
+  COD
+  CARD
+}
+
+// ---------- Admin ----------
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  statusEvents OrderStatusEvent[]
+}
+
+// ---------- Catalog ----------
+
+model Category {
+  id          String   @id @default(cuid())
+  parentId    String?
+  audience    Audience @default(MEN)
+  position    Int      @default(0)
+  isActive    Boolean  @default(true)
+  image       String?
+  sizeGuideId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parent       Category?             @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children     Category[]            @relation("CategoryTree")
+  sizeGuide    SizeGuide?            @relation(fields: [sizeGuideId], references: [id], onDelete: SetNull)
+  translations CategoryTranslation[]
+  products     Product[]
+
+  @@index([parentId])
+  @@index([sizeGuideId])
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  categoryId  String
+  locale      Locale
+  name        String
+  slug        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@unique([locale, slug])
+}
+
+model Collection {
+  id         String   @id @default(cuid())
+  image      String?
+  position   Int      @default(0)
+  isActive   Boolean  @default(true)
+  showOnHome Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  translations CollectionTranslation[]
+  products     ProductCollection[]
+}
+
+model CollectionTranslation {
+  id           String   @id @default(cuid())
+  collectionId String
+  locale       Locale
+  name         String
+  slug         String
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, locale])
+  @@unique([locale, slug])
+}
+
+model Product {
+  id             String        @id @default(cuid())
+  categoryId     String
+  price          Int // centimes
+  compareAtPrice Int? // centimes; sale when compareAtPrice > price
+  status         ProductStatus @default(DRAFT)
+  isFeatured     Boolean       @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  category     Category             @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  translations ProductTranslation[]
+  images       ProductImage[]
+  variants     Variant[]
+  collections  ProductCollection[]
+
+  @@index([categoryId])
+  @@index([status, publishedAt])
+}
+
+model ProductTranslation {
+  id          String   @id @default(cuid())
+  productId   String
+  locale      Locale
+  name        String
+  slug        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@unique([locale, slug])
+}
+
+model ProductCollection {
+  productId    String
+  collectionId String
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, collectionId])
+  @@index([collectionId])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  colorId   String?
+  url       String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product      Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color        Color?                    @relation(fields: [colorId], references: [id], onDelete: SetNull)
+  translations ProductImageTranslation[]
+
+  @@index([productId])
+  @@index([colorId])
+}
+
+model ProductImageTranslation {
+  id             String   @id @default(cuid())
+  productImageId String
+  locale         Locale
+  alt            String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  productImage ProductImage @relation(fields: [productImageId], references: [id], onDelete: Cascade)
+
+  @@unique([productImageId, locale])
+}
+
+model Color {
+  id        String   @id @default(cuid())
+  hex       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations ColorTranslation[]
+  images       ProductImage[]
+  variants     Variant[]
+}
+
+model ColorTranslation {
+  id        String   @id @default(cuid())
+  colorId   String
+  locale    Locale
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  @@unique([colorId, locale])
+}
+
+model Size {
+  id        String    @id @default(cuid())
+  label     String // S, M, L, XL, 40, 41... never translated
+  group     SizeGroup
+  position  Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  variants Variant[]
+
+  // Labels such as 40 exist in both BOTTOM and SHOES groups.
+  @@unique([group, label])
+}
+
+model Variant {
+  id        String   @id @default(cuid())
+  productId String
+  colorId   String
+  sizeId    String
+  sku       String   @unique
+  stock     Int      @default(0) // >= 0, enforced by a CHECK constraint added in the migration
+  price     Int? // centimes override
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color      Color       @relation(fields: [colorId], references: [id], onDelete: Restrict)
+  size       Size        @relation(fields: [sizeId], references: [id], onDelete: Restrict)
+  orderItems OrderItem[]
+
+  @@unique([productId, colorId, sizeId])
+  @@index([productId])
+  @@index([colorId])
+  @@index([sizeId])
+}
+
+model SizeGuide {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations SizeGuideTranslation[]
+  categories   Category[]
+}
+
+model SizeGuideTranslation {
+  id          String   @id @default(cuid())
+  sizeGuideId String
+  locale      Locale
+  content     String // rich text / table
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sizeGuide SizeGuide @relation(fields: [sizeGuideId], references: [id], onDelete: Cascade)
+
+  @@unique([sizeGuideId, locale])
+}
+
+// ---------- Content ----------
+
+model Banner {
+  id           String   @id @default(cuid())
+  imageDesktop String
+  imageMobile  String?
+  link         String?
+  position     Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  translations BannerTranslation[]
+}
+
+model BannerTranslation {
+  id        String   @id @default(cuid())
+  bannerId  String
+  locale    Locale
+  title     String
+  subtitle  String?
+  ctaLabel  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  banner Banner @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+
+  @@unique([bannerId, locale])
+}
+
+// Static content pages (About...). `key` is the stable identifier, e.g. "about".
+model Page {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations PageTranslation[]
+}
+
+model PageTranslation {
+  id        String   @id @default(cuid())
+  pageId    String
+  locale    Locale
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, locale])
+}
+
+// ---------- Orders ----------
+
+model Order {
+  id             String        @id @default(cuid())
+  number         String        @unique // human readable, e.g. B-10042 (from the order_number_seq sequence)
+  accessToken    String        @unique // unguessable token for the public confirmation page
+  idempotencyKey String        @unique // client-generated, blocks double submit
+  status         OrderStatus   @default(NEW)
+  paymentMethod  PaymentMethod @default(COD)
+  firstName      String
+  lastName       String
+  phone          String
+  email          String?
+  city           String
+  address        String
+  note           String?
+  locale         Locale
+  subtotal       Int // centimes
+  shippingFee    Int // centimes
+  total          Int // centimes
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  items        OrderItem[]
+  statusEvents OrderStatusEvent[]
+
+  @@index([status, createdAt])
+  @@index([phone])
+}
+
+// Snapshot: never re-read product data to display a past order.
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  variantId   String?
+  productName String
+  sku         String
+  colorName   String
+  sizeLabel   String
+  unitPrice   Int // centimes
+  quantity    Int
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant Variant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+model OrderStatusEvent {
+  id          String       @id @default(cuid())
+  orderId     String
+  from        OrderStatus?
+  to          OrderStatus
+  adminUserId String?
+  note        String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([adminUserId])
+}
+
+// ---------- Shipping, settings, newsletter ----------
+
+model City {
+  id          String   @id @default(cuid())
+  nameFr      String   @unique
+  nameAr      String
+  isActive    Boolean  @default(true)
+  shippingFee Int? // centimes override
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Singleton: always id "singleton".
+model Settings {
+  id                    String   @id @default("singleton")
+  shippingFee           Int      @default(3000) // centimes
+  freeShippingThreshold Int      @default(49900) // centimes
+  whatsappNumber        String?
+  adminNotifyEmail      String?
+  lowStockThreshold     Int      @default(3)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  locale    Locale
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
