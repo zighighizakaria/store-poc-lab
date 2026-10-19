@@ -61,22 +61,24 @@ model AdminUser {
   updatedAt    DateTime @updatedAt
 
   statusEvents OrderStatusEvent[]
+  uploads      MediaAsset[]
 }
 
 // ---------- Catalog ----------
 
 model Category {
-  id          String   @id @default(cuid())
-  parentId    String?
-  audience    Audience @default(MEN)
-  position    Int      @default(0)
-  isActive    Boolean  @default(true)
-  image       String?
-  sizeGuideId String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  parentId     String?
+  audience     Audience @default(MEN)
+  position     Int      @default(0)
+  isActive     Boolean  @default(true)
+  mediaAssetId String?
+  sizeGuideId  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   parent       Category?             @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  mediaAsset   MediaAsset?           @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
   children     Category[]            @relation("CategoryTree")
   sizeGuide    SizeGuide?            @relation(fields: [sizeGuideId], references: [id], onDelete: SetNull)
   translations CategoryTranslation[]
@@ -84,6 +86,7 @@ model Category {
 
   @@index([parentId])
   @@index([sizeGuideId])
+  @@index([mediaAssetId])
 }
 
 model CategoryTranslation {
@@ -103,16 +106,19 @@ model CategoryTranslation {
 }
 
 model Collection {
-  id         String   @id @default(cuid())
-  image      String?
-  position   Int      @default(0)
-  isActive   Boolean  @default(true)
-  showOnHome Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  mediaAssetId String?
+  position     Int      @default(0)
+  isActive     Boolean  @default(true)
+  showOnHome   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  mediaAsset   MediaAsset?             @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
   translations CollectionTranslation[]
   products     ProductCollection[]
+
+  @@index([mediaAssetId])
 }
 
 model CollectionTranslation {
@@ -183,33 +189,21 @@ model ProductCollection {
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
-  productId String
-  colorId   String?
-  url       String
-  position  Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  productId    String
+  colorId      String?
+  mediaAssetId String
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  product      Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  color        Color?                    @relation(fields: [colorId], references: [id], onDelete: SetNull)
-  translations ProductImageTranslation[]
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color      Color?     @relation(fields: [colorId], references: [id], onDelete: SetNull)
+  mediaAsset MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
 
   @@index([productId])
   @@index([colorId])
-}
-
-model ProductImageTranslation {
-  id             String   @id @default(cuid())
-  productImageId String
-  locale         Locale
-  alt            String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  productImage ProductImage @relation(fields: [productImageId], references: [id], onDelete: Cascade)
-
-  @@unique([productImageId, locale])
+  @@index([mediaAssetId])
 }
 
 model Color {
@@ -296,17 +290,65 @@ model SizeGuideTranslation {
 
 // ---------- Content ----------
 
-model Banner {
+// One processed image of the media library (WebP, EXIF stripped, 2400px max).
+// Referenced by id from product images, banners, collections and categories.
+model MediaAsset {
   id           String   @id @default(cuid())
-  imageDesktop String
-  imageMobile  String?
-  link         String?
-  position     Int      @default(0)
-  isActive     Boolean  @default(true)
+  storageKey   String   @unique // key in the Storage; rows migrated from external URLs hold the absolute URL
+  mime         String
+  size         Int? // bytes; null only for rows migrated from legacy URLs
+  width        Int? // px; null only for rows migrated from legacy URLs
+  height       Int?
+  originalName String
+  sourceUrl    String?
+  author       String?
+  license      String?
+  uploadedById String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  uploadedBy     AdminUser?              @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  translations   MediaAssetTranslation[]
+  productImages  ProductImage[]
+  bannersDesktop Banner[]                @relation("BannerDesktopMedia")
+  bannersMobile  Banner[]                @relation("BannerMobileMedia")
+  collections    Collection[]
+  categories     Category[]
+
+  @@index([uploadedById])
+  @@index([createdAt])
+}
+
+// Translated alt text (FR first, AR/EN optional, fallback to FR).
+model MediaAssetTranslation {
+  id           String   @id @default(cuid())
+  mediaAssetId String
+  locale       Locale
+  alt          String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  mediaAsset MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@unique([mediaAssetId, locale])
+}
+
+model Banner {
+  id                  String   @id @default(cuid())
+  desktopMediaAssetId String
+  mobileMediaAssetId  String?
+  link                String?
+  position            Int      @default(0)
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  desktopMedia MediaAsset          @relation("BannerDesktopMedia", fields: [desktopMediaAssetId], references: [id], onDelete: Restrict)
+  mobileMedia  MediaAsset?         @relation("BannerMobileMedia", fields: [mobileMediaAssetId], references: [id], onDelete: Restrict)
   translations BannerTranslation[]
+
+  @@index([desktopMediaAssetId])
+  @@index([mobileMediaAssetId])
 }
 
 model BannerTranslation {

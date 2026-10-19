@@ -11,7 +11,6 @@ export type CategoryOption = {
   depth: number;
   isActive: boolean;
   position: number;
-  image: string | null;
   /** Ids of this category and all its descendants (a category cannot move under itself). */
   subtreeIds: string[];
 };
@@ -43,7 +42,6 @@ export async function loadCategoryOptions(): Promise<CategoryOption[]> {
         depth,
         isActive: row.isActive,
         position: row.position,
-        image: row.image,
         subtreeIds: [],
       });
       const below = walk(row.id, [...trail, name], depth + 1);

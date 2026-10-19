@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { AdminForm, SubmitButton } from "@/components/admin/AdminForm";
-import { ImageField } from "@/components/admin/ImageField";
 import { LocaleTabs } from "@/components/admin/LocaleTabs";
+import { MediaField } from "@/components/admin/MediaField";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Input";
 import { saveCollection } from "@/lib/actions/admin/collections";
@@ -16,7 +16,7 @@ type Props = {
   texts: Record<string, string>;
   isActive: boolean;
   showOnHome: boolean;
-  image: string | null;
+  image: { id: string; url: string } | null;
   allProducts: ProductOption[];
   /** Product ids in display order. */
   selected: string[];
@@ -114,7 +114,7 @@ export function CollectionForm({ id, texts, isActive, showOnHome, image, allProd
           { name: "description", label: "Description", kind: "textarea", rows: 3 },
         ]}
       />
-      <ImageField name="image" label="Image" currentUrl={image} />
+      <MediaField name="mediaAssetId" label="Image" value={image} />
       <div className="flex flex-wrap gap-24">
         <label className="inline-flex min-h-44 cursor-pointer items-center gap-12 text-body-lg">
           <input type="checkbox" name="isActive" defaultChecked={isActive} className="size-20 accent-accent" />

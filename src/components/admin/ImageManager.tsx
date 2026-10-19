@@ -1,24 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useTransition } from "react";
-import { ArrowDown, ArrowUp, Trash2, Upload } from "lucide-react";
-import { Button, buttonClasses } from "@/components/ui/Button";
-import { Input, Select } from "@/components/ui/Input";
+import Link from "next/link";
+import { useState, useTransition } from "react";
+import { ArrowDown, ArrowUp, ImagePlus, Repeat, Trash2 } from "lucide-react";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Input";
 import {
+  addProductImages,
   deleteProductImage,
   moveProductImage,
-  updateProductImage,
-  uploadProductImage,
+  setProductImageColor,
+  swapProductImage,
   type ImageActionResult,
 } from "@/lib/actions/admin/product-images";
-import { cn } from "@/lib/cn";
 
 export type ManagedImage = {
   id: string;
+  mediaAssetId: string;
   url: string;
+  name: string;
+  /** French alt text of the asset (edited in the media library). */
+  alt: string;
   colorId: string | null;
-  alt: { fr: string; ar: string; en: string };
 };
 
 type Props = {
@@ -27,45 +32,36 @@ type Props = {
   colors: { id: string; name: string }[];
 };
 
+type Run = (task: () => Promise<ImageActionResult>) => void;
+
 function ImageCard({
   image,
   index,
   count,
   colors,
   run,
+  onSwap,
 }: {
   image: ManagedImage;
   index: number;
   count: number;
   colors: Props["colors"];
-  run: (task: () => Promise<ImageActionResult>) => void;
+  run: Run;
+  onSwap: () => void;
 }) {
-  const [colorId, setColorId] = useState(image.colorId ?? "");
-  const [alt, setAlt] = useState(image.alt);
-  const save = (next: { colorId?: string; alt?: typeof alt }) =>
-    run(() =>
-      updateProductImage(image.id, {
-        colorId: (next.colorId ?? colorId) || null,
-        alt: next.alt ?? alt,
-      }),
-    );
-
   return (
     <li className="flex flex-col gap-8 rounded-image border border-line p-8">
       <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-canvas">
-        <Image src={image.url} alt={image.alt.fr || ""} fill sizes="200px" className="object-cover" />
+        <Image src={image.url} alt={image.alt} fill sizes="200px" className="object-cover" />
         <span className="absolute start-6 top-6 rounded-pill bg-surface px-8 py-4 text-caption font-semibold shadow-sm">
           {index + 1}
         </span>
       </div>
       <Select
-        value={colorId}
+        value={image.colorId ?? ""}
         aria-label="Couleur de l'image"
         className="min-h-40 text-body"
-        onChange={(e) => {
-          setColorId(e.target.value);
-          save({ colorId: e.target.value });
-        }}
+        onChange={(e) => run(() => setProductImageColor(image.id, e.target.value || null))}
       >
         <option value="">Toutes les couleurs</option>
         {colors.map((c) => (
@@ -74,24 +70,13 @@ function ImageCard({
           </option>
         ))}
       </Select>
-      <details>
-        <summary className="cursor-pointer text-body-sm text-muted">Texte alternatif (traduit)</summary>
-        <div className="mt-8 flex flex-col gap-6">
-          {(["fr", "ar", "en"] as const).map((locale) => (
-            <Input
-              key={locale}
-              value={alt[locale]}
-              dir={locale === "ar" ? "rtl" : undefined}
-              placeholder={`Alt ${locale.toUpperCase()}`}
-              aria-label={`Texte alternatif ${locale.toUpperCase()}`}
-              maxLength={200}
-              className="min-h-40 text-body"
-              onChange={(e) => setAlt({ ...alt, [locale]: e.target.value })}
-              onBlur={() => save({})}
-            />
-          ))}
-        </div>
-      </details>
+      <Link
+        href={`/admin/media?asset=${image.mediaAssetId}`}
+        className="truncate text-body-sm text-muted underline-offset-2 hover:underline"
+        title={image.name}
+      >
+        {image.alt || "Ajouter un texte alternatif"}
+      </Link>
       <div className="flex items-center justify-between gap-4">
         <div className="flex gap-4">
           <Button
@@ -113,77 +98,57 @@ function ImageCard({
             <ArrowDown aria-hidden="true" strokeWidth={1.5} className="size-16" />
           </Button>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          aria-label="Supprimer l'image"
-          onClick={() => {
-            if (window.confirm("Supprimer cette image ?")) run(() => deleteProductImage(image.id));
-          }}
-        >
-          <Trash2 aria-hidden="true" strokeWidth={1.5} className="size-16" />
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="secondary" size="sm" aria-label="Remplacer par un autre média" onClick={onSwap}>
+            <Repeat aria-hidden="true" strokeWidth={1.5} className="size-16" />
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            aria-label="Retirer l'image du produit"
+            onClick={() => {
+              if (window.confirm("Retirer cette image du produit ? Le fichier reste dans la médiathèque.")) {
+                run(() => deleteProductImage(image.id));
+              }
+            }}
+          >
+            <Trash2 aria-hidden="true" strokeWidth={1.5} className="size-16" />
+          </Button>
+        </div>
       </div>
     </li>
   );
 }
 
-/** Upload (one file per request), reorder with arrows, assign to a color, delete. */
+/** Add images from the media library, swap, reorder with arrows, assign to a color, remove. */
 export function ImageManager({ productId, images, colors }: Props) {
   const [pending, startTransition] = useTransition();
-  const [errors, setErrors] = useState<string[]>([]);
-  const input = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [swapping, setSwapping] = useState<string | null>(null); // product image id
 
-  function run(task: () => Promise<ImageActionResult>) {
+  const run: Run = (task) => {
+    setError(null);
     startTransition(async () => {
       const result = await task();
-      if (!result.ok) setErrors([result.error]);
+      if (!result.ok) setError(result.error);
     });
-  }
-
-  function upload(files: FileList | null) {
-    if (!files || files.length === 0) return;
-    const list = [...files];
-    setErrors([]);
-    startTransition(async () => {
-      const failures: string[] = [];
-      for (const file of list) {
-        const formData = new FormData();
-        formData.set("productId", productId);
-        formData.set("file", file);
-        const result = await uploadProductImage(formData);
-        if (!result.ok) failures.push(result.error);
-      }
-      setErrors(failures);
-      if (input.current) input.current.value = "";
-    });
-  }
+  };
 
   return (
     <div>
       <div className="mb-12 flex flex-wrap items-center gap-12">
-        <label className={cn(buttonClasses({ variant: "primary", size: "md" }), "relative cursor-pointer", pending && "opacity-60")}>
-          <Upload aria-hidden="true" strokeWidth={1.5} className="size-16" />
-          {pending ? "Envoi en cours…" : "Ajouter des images"}
-          <input
-            ref={input}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            disabled={pending}
-            className="sr-only"
-            onChange={(e) => upload(e.target.files)}
-          />
-        </label>
-        <span className="text-body-sm text-muted">JPEG, PNG ou WebP, 5 Mo maximum chacune.</span>
+        <Button variant="primary" loading={pending} onClick={() => setAdding(true)}>
+          <ImagePlus aria-hidden="true" strokeWidth={1.5} className="size-16" />
+          Ajouter des images
+        </Button>
+        <span className="text-body-sm text-muted">Choisies dans la médiathèque, ou envoyées depuis la fenêtre.</span>
       </div>
 
-      {errors.length > 0 ? (
-        <ul role="alert" className="mb-12 rounded-field bg-error-wash px-16 py-12 text-body text-error">
-          {errors.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
+      {error ? (
+        <p role="alert" className="mb-12 rounded-field bg-error-wash px-16 py-12 text-body text-error">
+          {error}
+        </p>
       ) : null}
 
       {images.length === 0 ? (
@@ -192,16 +157,41 @@ export function ImageManager({ productId, images, colors }: Props) {
         <ul className="grid grid-cols-2 gap-12 sm:grid-cols-3 lg:grid-cols-5">
           {images.map((image, index) => (
             <ImageCard
-              key={`${image.id}-${image.colorId}-${image.alt.fr}-${image.alt.ar}-${image.alt.en}`}
+              key={image.id}
               image={image}
               index={index}
               count={images.length}
               colors={colors}
               run={run}
+              onSwap={() => setSwapping(image.id)}
             />
           ))}
         </ul>
       )}
+
+      <MediaPicker
+        open={adding}
+        multiple
+        title="Ajouter des images"
+        onClose={() => setAdding(false)}
+        onPick={(cards) =>
+          run(() =>
+            addProductImages(
+              productId,
+              cards.map((c) => c.id),
+            ),
+          )
+        }
+      />
+      <MediaPicker
+        open={swapping !== null}
+        title="Remplacer l'image"
+        onClose={() => setSwapping(null)}
+        onPick={([card]) => {
+          const imageId = swapping;
+          if (imageId) run(() => swapProductImage(imageId, card.id));
+        }}
+      />
     </div>
   );
 }

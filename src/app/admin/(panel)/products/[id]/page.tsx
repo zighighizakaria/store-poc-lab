@@ -9,6 +9,7 @@ import { loadCategoryOptions, loadCollectionOptions } from "@/lib/admin/categori
 import { dateTimeInput, madInput } from "@/lib/admin/form";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaUrl } from "@/lib/media/url";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,10 @@ export default async function EditProductPage({ params, searchParams }: Props) {
     include: {
       translations: true,
       collections: { select: { collectionId: true } },
-      images: { orderBy: [{ position: "asc" }, { createdAt: "asc" }], include: { translations: true } },
+      images: {
+        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+        include: { mediaAsset: { include: { translations: true } } },
+      },
       variants: { include: { color: { include: { translations: true } }, size: true } },
     },
   });
@@ -105,16 +109,14 @@ export default async function EditProductPage({ params, searchParams }: Props) {
           <ImageManager
             productId={product.id}
             colors={colors.map(({ id: colorId, name: colorName }) => ({ id: colorId, name: colorName }))}
-            images={product.images.map((image) => {
-              const alt = (locale: "fr" | "ar" | "en") =>
-                image.translations.find((t) => t.locale === locale)?.alt ?? "";
-              return {
-                id: image.id,
-                url: image.url,
-                colorId: image.colorId,
-                alt: { fr: alt("fr"), ar: alt("ar"), en: alt("en") },
-              };
-            })}
+            images={product.images.map((image) => ({
+              id: image.id,
+              mediaAssetId: image.mediaAssetId,
+              url: mediaUrl(image.mediaAsset.storageKey),
+              name: image.mediaAsset.originalName,
+              alt: image.mediaAsset.translations.find((t) => t.locale === "fr")?.alt ?? "",
+              colorId: image.colorId,
+            }))}
           />
         </Panel>
 

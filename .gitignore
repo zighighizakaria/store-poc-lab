@@ -44,3 +44,9 @@ next-env.d.ts
 
 # Uploaded images (LocalStorage), served by /media/[...path]
 /uploads/
+
+# Parallel agent worktrees
+/.claude/worktrees/
+
+# Demo image download cache (prisma/seed.ts)
+/prisma/.demo-cache/

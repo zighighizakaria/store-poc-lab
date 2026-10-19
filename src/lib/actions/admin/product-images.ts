@@ -2,57 +2,68 @@
 
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { fileOf, textOf } from "@/lib/admin/form";
 import { revalidateAdmin, revalidateStorefront } from "@/lib/admin/revalidate";
 import { requireAdmin } from "@/lib/admin/session";
-import { removeStoredImage, storeImage } from "@/lib/storage";
 
-// Called from the ImageManager (client) one file at a time. Results are plain
-// objects: { ok } or { ok: false, error }.
+// Called from the ImageManager (client). Images are picked from the media
+// library (MediaPicker); a product image is a link to a MediaAsset plus a color
+// and a position. Results are plain objects: { ok } or { ok: false, error }.
 export type ImageActionResult = { ok: true } | { ok: false; error: string };
 
 const MAX_IMAGES_PER_PRODUCT = 20;
 
 const refresh = (productId: string) => {
-  revalidateAdmin(`/admin/products/${productId}`, "/admin/products");
+  revalidateAdmin(`/admin/products/${productId}`, "/admin/products", "/admin/media");
   revalidateStorefront();
 };
 
-export async function uploadProductImage(formData: FormData): Promise<ImageActionResult> {
+const idsSchema = z.array(z.string().min(1).max(64)).min(1).max(MAX_IMAGES_PER_PRODUCT);
+
+/** Add library assets to a product, at the end of its gallery. */
+export async function addProductImages(productId: string, mediaAssetIds: string[]): Promise<ImageActionResult> {
   await requireAdmin();
-  const productId = textOf(formData, "productId");
-  const file = fileOf(formData, "file");
-  if (!file) return { ok: false, error: "Aucun fichier reçu." };
+  const parsed = idsSchema.safeParse(mediaAssetIds);
+  if (!parsed.success) return { ok: false, error: "Aucune image sélectionnée." };
 
   const product = await db.product.findUnique({
     where: { id: productId },
     select: { id: true, _count: { select: { images: true } } },
   });
   if (!product) return { ok: false, error: "Produit introuvable." };
-  if (product._count.images >= MAX_IMAGES_PER_PRODUCT) {
+  if (product._count.images + parsed.data.length > MAX_IMAGES_PER_PRODUCT) {
     return { ok: false, error: `${MAX_IMAGES_PER_PRODUCT} images maximum par produit.` };
   }
-
-  const stored = await storeImage(file, `products/${productId}`);
-  if (!stored.ok) return { ok: false, error: `${file.name} : ${stored.error}` };
+  const assets = await db.mediaAsset.findMany({ where: { id: { in: parsed.data } }, select: { id: true } });
+  if (assets.length !== new Set(parsed.data).size) return { ok: false, error: "Média introuvable." };
 
   const last = await db.productImage.aggregate({ where: { productId }, _max: { position: true } });
-  await db.productImage.create({
-    data: { productId, url: stored.url, position: (last._max.position ?? -1) + 1 },
+  const start = (last._max.position ?? -1) + 1;
+  await db.productImage.createMany({
+    data: [...new Set(parsed.data)].map((mediaAssetId, i) => ({ productId, mediaAssetId, position: start + i })),
   });
   refresh(productId);
   return { ok: true };
 }
 
+/** Point a product image (keeping its position and color) at another library asset. */
+export async function swapProductImage(imageId: string, mediaAssetId: string): Promise<ImageActionResult> {
+  await requireAdmin();
+  const image = await db.productImage.findUnique({ where: { id: imageId }, select: { productId: true } });
+  if (!image) return { ok: false, error: "Image introuvable." };
+  if (!(await db.mediaAsset.findUnique({ where: { id: mediaAssetId }, select: { id: true } }))) {
+    return { ok: false, error: "Média introuvable." };
+  }
+  await db.productImage.update({ where: { id: imageId }, data: { mediaAssetId } });
+  refresh(image.productId);
+  return { ok: true };
+}
+
+/** Remove the image from the product. The file stays in the media library. */
 export async function deleteProductImage(imageId: string): Promise<ImageActionResult> {
   await requireAdmin();
   const image = await db.productImage.findUnique({ where: { id: imageId } });
   if (!image) return { ok: false, error: "Image introuvable." };
   await db.productImage.delete({ where: { id: imageId } });
-  // Order snapshots may still show this URL for a past order: keep the file
-  // only when an order item references it.
-  const referenced = await db.orderItem.count({ where: { image: image.url } });
-  if (referenced === 0) await removeStoredImage(image.url);
   refresh(image.productId);
   return { ok: true };
 }
@@ -82,47 +93,15 @@ export async function moveProductImage(
   return { ok: true };
 }
 
-const detailsSchema = z.object({
-  colorId: z.string().max(64).nullable(),
-  alt: z.object({
-    fr: z.string().trim().max(200),
-    ar: z.string().trim().max(200),
-    en: z.string().trim().max(200),
-  }),
-});
-
-/** Assign the image to a color (for swatch switching) and set its optional translated alt text. */
-export async function updateProductImage(
-  imageId: string,
-  details: z.input<typeof detailsSchema>,
-): Promise<ImageActionResult> {
+/** Assign the image to a color (for swatch switching). */
+export async function setProductImageColor(imageId: string, colorId: string | null): Promise<ImageActionResult> {
   await requireAdmin();
-  const parsed = detailsSchema.safeParse(details);
-  if (!parsed.success) return { ok: false, error: "Texte alternatif trop long (200 caractères)." };
-
   const image = await db.productImage.findUnique({ where: { id: imageId } });
   if (!image) return { ok: false, error: "Image introuvable." };
-
-  const { colorId, alt } = parsed.data;
   if (colorId && !(await db.color.findUnique({ where: { id: colorId }, select: { id: true } }))) {
     return { ok: false, error: "Couleur introuvable." };
   }
-
-  await db.$transaction(async (tx) => {
-    await tx.productImage.update({ where: { id: imageId }, data: { colorId: colorId || null } });
-    for (const locale of ["fr", "ar", "en"] as const) {
-      const text = alt[locale];
-      if (text) {
-        await tx.productImageTranslation.upsert({
-          where: { productImageId_locale: { productImageId: imageId, locale } },
-          update: { alt: text },
-          create: { productImageId: imageId, locale, alt: text },
-        });
-      } else {
-        await tx.productImageTranslation.deleteMany({ where: { productImageId: imageId, locale } });
-      }
-    }
-  });
+  await db.productImage.update({ where: { id: imageId }, data: { colorId: colorId || null } });
   refresh(image.productId);
   return { ok: true };
 }

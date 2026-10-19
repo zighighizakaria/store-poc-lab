@@ -23,6 +23,7 @@ import {
 } from "@/lib/catalog";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaAssetUrl, mediaUrl } from "@/lib/media/url";
 import { formatMoney } from "@/lib/money";
 import { collectionPath, samePathForAllLocales } from "@/lib/routes";
 import { alternatesFor } from "@/lib/seo";
@@ -50,7 +51,7 @@ export default async function HomePage({ params }: Props) {
     db.banner.findMany({
       where: { isActive: true },
       orderBy: { position: "asc" },
-      include: { translations: true },
+      include: { translations: true, desktopMedia: true, mobileMedia: true },
     }),
     getCategoryIndex(),
     loadListingProducts({ publishedAt: { not: null } }, locale, {
@@ -70,8 +71,8 @@ export default async function HomePage({ params }: Props) {
       subtitle: text.subtitle,
       ctaLabel: text.ctaLabel,
       href: banner.link,
-      desktopUrl: banner.imageDesktop,
-      mobileUrl: banner.imageMobile,
+      desktopUrl: mediaUrl(banner.desktopMedia.storageKey),
+      mobileUrl: mediaAssetUrl(banner.mobileMedia),
     };
   });
 
@@ -131,9 +132,9 @@ export default async function HomePage({ params }: Props) {
                 <li key={collection.id}>
                   <Card className="group relative h-full transition-shadow duration-base hover:shadow-lg">
                     <ProductImageTile>
-                      {collection.image ? (
+                      {collection.mediaAsset ? (
                         <Image
-                          src={collection.image}
+                          src={mediaUrl(collection.mediaAsset.storageKey)}
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 33vw, 50vw"

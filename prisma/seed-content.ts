@@ -115,13 +115,11 @@ export const categoryGuide: Record<string, SizeGuideKey> = {
 };
 
 // ---------- Home banners ----------
-// Placeholder .png images (placehold.co): desktop 1600x640, mobile 800x1000.
-// `link` is a locale-less internal path.
+// Photos come from prisma/demo-images.json (`key`). `link` is a locale-less internal path.
 
 export type BannerSeed = {
+  key: string;
   link: string;
-  bg: string;
-  fg: string;
   title: Tri;
   subtitle: Tri;
   cta: Tri;
@@ -129,9 +127,8 @@ export type BannerSeed = {
 
 export const banners: BannerSeed[] = [
   {
+    key: "new-collection",
     link: "/nouveautes",
-    bg: "332f2d",
-    fg: "ffffff",
     title: { fr: "Nouvelle collection", ar: "المجموعة الجديدة", en: "New collection" },
     subtitle: {
       fr: "Découvrez les dernières pièces arrivées en boutique.",
@@ -141,9 +138,8 @@ export const banners: BannerSeed[] = [
     cta: { fr: "Voir les nouveautés", ar: "عرض الجديد", en: "Shop new arrivals" },
   },
   {
+    key: "sale",
     link: "/soldes",
-    bg: "d8c3a5",
-    fg: "111111",
     title: { fr: "C'est les soldes", ar: "بدأت التخفيضات", en: "The sale is on" },
     subtitle: {
       fr: "Des prix réduits sur une sélection d'articles, tant que les stocks sont disponibles.",
@@ -153,14 +149,6 @@ export const banners: BannerSeed[] = [
     cta: { fr: "Voir les soldes", ar: "عرض التخفيضات", en: "Shop the sale" },
   },
 ];
-
-// Placeholder image colors (hex, no #) of the home collection tiles, by collection key.
-export const collectionImageColors: Record<string, { bg: string; fg: string }> = {
-  nouveautes: { bg: "1f2a44", fg: "ffffff" },
-  "ete-26": { bg: "8ec5e8", fg: "111111" },
-  essentials: { bg: "556b2f", fg: "ffffff" },
-  streetwear: { bg: "6d1a2a", fg: "ffffff" },
-};
 
 // ---------- Static pages (placeholder legal / help content) ----------
 

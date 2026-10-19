@@ -26,7 +26,7 @@ const nextKey = () => `test-key-${Date.now()}-${++keyCounter}-0000000000`;
 
 async function resetDatabase() {
   await db.$executeRawUnsafe(
-    `TRUNCATE "Order","AdminUser","Product","Category","Color","Size","City","Settings" RESTART IDENTITY CASCADE`,
+    `TRUNCATE "Order","AdminUser","Product","Category","Color","Size","City","Settings","MediaAsset" RESTART IDENTITY CASCADE`,
   );
   await db.$executeRawUnsafe(`ALTER SEQUENCE order_number_seq RESTART WITH 10001`);
 }
@@ -68,7 +68,15 @@ async function seedFixture(): Promise<Fixture> {
           { locale: "ar", name: "جينز مستقيم", slug: "جينز-مستقيم" },
         ],
       },
-      images: { create: [{ url: "https://example.test/jean.png", colorId: color.id }] },
+      images: {
+        create: [
+          {
+            color: { connect: { id: color.id } },
+            // An external URL as storage key is how legacy placeholder images are kept.
+            mediaAsset: { create: { storageKey: "https://example.test/jean.png", mime: "image/png", originalName: "jean.png" } },
+          },
+        ],
+      },
     },
   });
   const p2 = await db.product.create({

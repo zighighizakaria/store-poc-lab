@@ -23,6 +23,7 @@ import { loadCategoryOptions } from "@/lib/admin/categories";
 import { PRODUCT_STATUS_LABELS } from "@/lib/admin/labels";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaUrl } from "@/lib/media/url";
 import { formatMoney } from "@/lib/money";
 import { isOnSale } from "@/lib/pricing";
 
@@ -64,7 +65,7 @@ export default async function ProductsPage({ searchParams }: Props) {
       take: PAGE_SIZE,
       include: {
         translations: true,
-        images: { orderBy: { position: "asc" }, take: 1 },
+        images: { orderBy: { position: "asc" }, take: 1, include: { mediaAsset: true } },
         variants: { select: { stock: true } },
       },
     }),
@@ -148,7 +149,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                         </td>
                         <td className={tdClass}>
                           <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-canvas">
-                            {image ? <Image src={image.url} alt="" fill sizes="40px" className="object-cover" /> : null}
+                            {image ? <Image src={mediaUrl(image.mediaAsset.storageKey)} alt="" fill sizes="40px" className="object-cover" /> : null}
                           </div>
                         </td>
                         <td className={tdClass}>

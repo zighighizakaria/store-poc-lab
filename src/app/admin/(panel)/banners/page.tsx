@@ -6,6 +6,7 @@ import { ActiveBadge, EmptyState, first, LinkButton, Notice, PageHeader, Panel }
 import { moveBanner, toggleBannerActive } from "@/lib/actions/admin/banners";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaUrl } from "@/lib/media/url";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function BannersPage({ searchParams }: Props) {
   const sp = await searchParams;
   const banners = await db.banner.findMany({
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
-    include: { translations: true },
+    include: { translations: true, desktopMedia: true },
   });
 
   return (
@@ -43,7 +44,7 @@ export default async function BannersPage({ searchParams }: Props) {
                 <Panel>
                   <div className="flex flex-wrap items-center gap-12">
                     <div className="relative h-64 w-[160px] shrink-0 overflow-hidden rounded-image bg-canvas">
-                      <Image src={banner.imageDesktop} alt="" fill sizes="160px" className="object-cover" />
+                      <Image src={mediaUrl(banner.desktopMedia.storageKey)} alt="" fill sizes="160px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1 basis-[160px]">
                       <Link href={`/admin/banners/${banner.id}`} className="font-medium underline-offset-2 hover:underline">

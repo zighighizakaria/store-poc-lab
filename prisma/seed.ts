@@ -1,9 +1,15 @@
 // Demo seed. Idempotent: the catalog is cleared then re-inserted, the admin and
 // settings are upserted. Orders and newsletter subscribers are left untouched.
+import { createHash } from "node:crypto";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { PrismaClient, type Locale, type SizeGroup } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { siteConfig } from "../site.config";
+import { processAndStore } from "../src/lib/media/pipeline";
 import { slugify } from "../src/lib/slugify";
+import { uploadsRoot } from "../src/lib/storage";
+import demoImages from "./demo-images.json";
 import {
   aboutPage,
   archivedProducts,
@@ -23,7 +29,6 @@ import {
 import {
   banners,
   categoryGuide,
-  collectionImageColors,
   sizeGuides,
   staticPages,
 } from "./seed-content";
@@ -61,14 +66,68 @@ function mulberry32(seed: number) {
   };
 }
 
-function textColorFor(hex: string): string {
-  const n = parseInt(hex.slice(1), 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  return (r * 299 + g * 587 + b * 114) / 1000 > 140 ? "111111" : "ffffff";
-}
-
 function triRows<T>(tri: Tri, build: (locale: Locale, text: string) => T): T[] {
   return LOCALES.map((locale) => build(locale, tri[locale]));
+}
+
+// ---------- Demo photos (prisma/demo-images.json) ----------
+// Each photo is downloaded once into prisma/.demo-cache/ (the seed then works
+// offline), run through the upload pipeline and stored as a MediaAsset. A
+// photo already imported (same sourceUrl, file still on disk) is reused.
+
+type DemoImage = { url: string; sourceUrl: string; author: string; license: string; colorKey?: string };
+
+const CACHE_DIR = path.join(process.cwd(), "prisma", ".demo-cache");
+const importedAssets = new Map<string, string>(); // sourceUrl -> MediaAsset id
+
+async function downloadCached(url: string): Promise<Buffer> {
+  const file = path.join(CACHE_DIR, `${createHash("sha1").update(url).digest("hex")}.img`);
+  try {
+    return await readFile(file);
+  } catch {
+    // not cached yet
+  }
+  const response = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+  if (!response.ok) throw new Error(`Demo image download failed (${response.status}): ${url}`);
+  const bytes = Buffer.from(await response.arrayBuffer());
+  await mkdir(CACHE_DIR, { recursive: true });
+  await writeFile(file, bytes);
+  return bytes;
+}
+
+const fileExists = (key: string) =>
+  stat(path.join(uploadsRoot(), ...key.split("/"))).then(
+    () => true,
+    () => false,
+  );
+
+/** The MediaAsset of a demo photo, created on first use. `alt` only applies to a new asset. */
+async function demoAsset(image: DemoImage, alt: Tri): Promise<string> {
+  const known = importedAssets.get(image.sourceUrl);
+  if (known) return known;
+
+  const existing = await db.mediaAsset.findFirst({ where: { sourceUrl: image.sourceUrl } });
+  if (existing && (await fileExists(existing.storageKey))) {
+    importedAssets.set(image.sourceUrl, existing.id);
+    return existing.id;
+  }
+
+  const { storageKey, mime, size, width, height } = await processAndStore(await downloadCached(image.url));
+  const file = { storageKey, mime, size, width, height };
+  const row = existing
+    ? await db.mediaAsset.update({ where: { id: existing.id }, data: file })
+    : await db.mediaAsset.create({
+        data: {
+          ...file,
+          originalName: `${path.basename(image.sourceUrl)}.jpg`,
+          sourceUrl: image.sourceUrl,
+          author: image.author,
+          license: image.license,
+          translations: { create: triRows(alt, (locale, text) => ({ locale, alt: text })) },
+        },
+      });
+  importedAssets.set(image.sourceUrl, row.id);
+  return row.id;
 }
 
 async function clearCatalog() {
@@ -84,6 +143,8 @@ async function clearCatalog() {
   await db.size.deleteMany();
   await db.city.deleteMany();
   await db.page.deleteMany();
+  // Placeholder images from before the media library (external URLs as storage key).
+  await db.mediaAsset.deleteMany({ where: { storageKey: { startsWith: "http" } } });
 }
 
 async function seedAdmin() {
@@ -204,26 +265,29 @@ async function seedProducts(
     const isArchived = archivedProducts.includes(n);
     const description = categoryDescriptions[product.category];
 
-    const colorCount = n % 5 === 0 ? 3 : 2;
-    const productColors = Array.from(
-      { length: colorCount },
-      (_, k) => colors[(n * 3 + k * 2) % colors.length],
-    );
+    // Colors follow the photos: one color per distinct photo color.
+    const photos: DemoImage[] | undefined = (demoImages.products as Record<string, DemoImage[]>)[
+      slugify(product.name.en)
+    ];
+    if (!photos?.length) throw new Error(`No demo photo for "${product.name.en}" in prisma/demo-images.json`);
+    const productColors = [...new Set(photos.map((photo) => photo.colorKey))].map((key) => {
+      const color = colors.find((c) => c.key === key);
+      if (!color) throw new Error(`Unknown demo color "${key}" for "${product.name.en}"`);
+      return color;
+    });
 
-    const images: { url: string; position: number; colorId: string }[] = [];
+    const images: { mediaAssetId: string; position: number; colorId: string }[] = [];
     const variants: { colorId: string; sizeId: string; sku: string; stock: number }[] = [];
 
     for (const color of productColors) {
       const colorId = colorIds.get(color.key)!;
-      const bg = color.hex.slice(1);
-      const fg = textColorFor(color.hex);
-      for (const view of [1, 2]) {
-        const text = encodeURIComponent(`${product.name.en} - ${color.name.en} (${view})`);
-        images.push({
-          url: `https://placehold.co/800x1000/${bg}/${fg}.png?text=${text}`,
-          position: images.length,
-          colorId,
-        });
+      for (const photo of photos.filter((p) => p.colorKey === color.key)) {
+        const alt: Tri = {
+          fr: `${product.name.fr} - ${color.name.fr}`,
+          ar: `${product.name.ar} - ${color.name.ar}`,
+          en: `${product.name.en} - ${color.name.en}`,
+        };
+        images.push({ mediaAssetId: await demoAsset(photo, alt), position: images.length, colorId });
       }
 
       for (const label of sizes[meta.group]) {
@@ -275,12 +339,7 @@ async function seedCollections(productIds: string[]) {
       data: {
         position: position++,
         showOnHome: collection.showOnHome,
-        image: placeholderImage(
-          collection.name.en,
-          collectionImageColors[collection.key] ?? { bg: "cccccc", fg: "111111" },
-          800,
-          1000,
-        ),
+        mediaAssetId: await demoAsset(demoCollectionImage(collection.key), collection.name),
         translations: {
           create: triRows(collection.name, (locale, name) => ({
             locale,
@@ -323,24 +382,21 @@ async function seedSettings(adminEmail: string) {
   });
 }
 
-// Placeholder .png from placehold.co (next/image does not render SVG by default).
-function placeholderImage(
-  text: string,
-  { bg, fg }: { bg: string; fg: string },
-  width: number,
-  height: number,
-): string {
-  return `https://placehold.co/${width}x${height}/${bg}/${fg}.png?text=${encodeURIComponent(text)}`;
+function demoCollectionImage(key: string): DemoImage {
+  const image = (demoImages.collections as Record<string, DemoImage>)[key];
+  if (!image) throw new Error(`No demo photo for collection "${key}" in prisma/demo-images.json`);
+  return image;
 }
 
 async function seedBanners() {
   let position = 0;
   for (const banner of banners) {
-    const colors = { bg: banner.bg, fg: banner.fg };
+    const photos = (demoImages.banners as Record<string, { desktop: DemoImage; mobile: DemoImage }>)[banner.key];
+    if (!photos) throw new Error(`No demo photo for banner "${banner.key}" in prisma/demo-images.json`);
     await db.banner.create({
       data: {
-        imageDesktop: placeholderImage(banner.title.en, colors, 1600, 640),
-        imageMobile: placeholderImage(banner.title.en, colors, 800, 1000),
+        desktopMediaAssetId: await demoAsset(photos.desktop, banner.title),
+        mobileMediaAssetId: await demoAsset(photos.mobile, banner.title),
         link: banner.link,
         position: position++,
         translations: {

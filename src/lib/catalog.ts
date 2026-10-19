@@ -4,6 +4,7 @@ import { cache } from "react";
 import type { Prisma, SizeGroup } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaUrl } from "@/lib/media/url";
 import { discountPercent, isNewProduct } from "@/lib/pricing";
 import { categoryPath, collectionPath, type LocalePaths } from "@/lib/routes";
 import { routing, type AppLocale } from "@/i18n/routing";
@@ -101,7 +102,7 @@ export function categoryRoot(node: CategoryNode): CategoryNode {
 // --------------------------------------------------------------- collections
 
 const collectionArgs = {
-  include: { translations: true },
+  include: { translations: true, mediaAsset: true },
 } satisfies Prisma.CollectionDefaultArgs;
 
 export type CollectionRow = Prisma.CollectionGetPayload<typeof collectionArgs>;
@@ -145,7 +146,7 @@ export async function getHomeCollections(): Promise<CollectionRow[]> {
 const listingArgs = {
   include: {
     translations: true,
-    images: { orderBy: { position: "asc" } },
+    images: { orderBy: { position: "asc" }, include: { mediaAsset: true } },
     variants: {
       include: { color: { include: { translations: true } }, size: true },
     },
@@ -219,7 +220,7 @@ export function toListingProduct(row: ListingRow, locale: string): ListingProduc
     isNew: isNewProduct(row.publishedAt),
     soldOut: row.variants.every((v) => v.stock <= 0),
     publishedAt: row.publishedAt ? row.publishedAt.getTime() : null,
-    images: row.images.map((image) => ({ url: image.url, colorId: image.colorId })),
+    images: row.images.map((image) => ({ url: mediaUrl(image.mediaAsset.storageKey), colorId: image.colorId })),
     colors: orderedIds.map((id) => colorById.get(id)!),
     variants: row.variants.map((v) => ({
       colorId: v.colorId,
@@ -286,7 +287,7 @@ const detailArgs = {
     },
     images: {
       orderBy: { position: "asc" },
-      include: { translations: true },
+      include: { mediaAsset: { include: { translations: true } } },
     },
     variants: {
       include: { color: { include: { translations: true } }, size: true },

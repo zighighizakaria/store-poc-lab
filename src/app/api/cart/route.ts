@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { CartLine, CartResponse } from "@/lib/cart-types";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaAssetUrl } from "@/lib/media/url";
 import { productPath } from "@/lib/routes";
 import { getSettings } from "@/lib/settings";
 import { routing } from "@/i18n/routing";
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
         product: {
           include: {
             translations: true,
-            images: { orderBy: { position: "asc" } },
+            images: { orderBy: { position: "asc" }, include: { mediaAsset: true } },
           },
         },
       },
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
       href: productPath(getTranslation(product, locale).slug),
       colorName: getTranslation(variant.color, locale).name,
       sizeLabel: variant.size.label,
-      image: image?.url ?? null,
+      image: mediaAssetUrl(image?.mediaAsset),
       unitPrice: variant.price ?? product.price,
       compareAtPrice,
       stock: variant.stock,

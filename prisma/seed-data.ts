@@ -160,6 +160,8 @@ export const colors: ColorSeed[] = [
     hex: "#556b2f",
     name: { fr: "Vert olive", ar: "أخضر زيتي", en: "Olive green" },
   },
+  { key: "denim", hex: "#3f5f8a", name: { fr: "Bleu denim", ar: "أزرق دنيم", en: "Denim blue" } },
+  { key: "brun", hex: "#6f4a2f", name: { fr: "Marron", ar: "بني", en: "Brown" } },
   {
     key: "bordeaux",
     hex: "#6d1a2a",

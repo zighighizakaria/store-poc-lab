@@ -1,18 +1,20 @@
 "use client";
 
 import { AdminForm, FormField, SubmitButton } from "@/components/admin/AdminForm";
-import { ImageField } from "@/components/admin/ImageField";
 import { LocaleTabs } from "@/components/admin/LocaleTabs";
+import { MediaField } from "@/components/admin/MediaField";
 import { Input } from "@/components/ui/Input";
 import { saveBanner } from "@/lib/actions/admin/banners";
+
+type MediaValue = { id: string; url: string };
 
 type Props = {
   id?: string;
   texts: Record<string, string>;
   link: string;
   isActive: boolean;
-  imageDesktop: string | null;
-  imageMobile: string | null;
+  imageDesktop: MediaValue | null;
+  imageMobile: MediaValue | null;
 };
 
 export function BannerForm({ id, texts, link, isActive, imageDesktop, imageMobile }: Props) {
@@ -29,17 +31,17 @@ export function BannerForm({ id, texts, link, isActive, imageDesktop, imageMobil
         ]}
       />
       <div className="grid grid-cols-1 gap-16 md:grid-cols-2">
-        <ImageField
-          name="imageDesktop"
+        <MediaField
+          name="desktopMediaAssetId"
           label="Image desktop"
-          currentUrl={imageDesktop}
+          value={imageDesktop}
           required
-          help="Obligatoire. Format large conseillé (1600 x 640). JPEG, PNG ou WebP, 5 Mo maximum."
+          help="Obligatoire. Format large conseillé (1600 x 640)."
         />
-        <ImageField
-          name="imageMobile"
+        <MediaField
+          name="mobileMediaAssetId"
           label="Image mobile (facultative)"
-          currentUrl={imageMobile}
+          value={imageMobile}
           help="Format portrait conseillé (800 x 1000). Sinon l'image desktop est utilisée."
         />
       </div>

@@ -5,6 +5,7 @@ import { first, LinkButton, Notice, PageHeader, Panel } from "@/components/admin
 import { deleteCategory } from "@/lib/actions/admin/categories";
 import { loadCategoryOptions, loadSizeGuideOptions } from "@/lib/admin/categories";
 import { db } from "@/lib/db";
+import { mediaValue } from "@/lib/media/url";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ type Props = {
 export default async function EditCategoryPage({ params, searchParams }: Props) {
   const { id } = await params;
   const sp = await searchParams;
-  const category = await db.category.findUnique({ where: { id }, include: { translations: true } });
+  const category = await db.category.findUnique({ where: { id }, include: { translations: true, mediaAsset: true } });
   if (!category) notFound();
 
   const [options, sizeGuides] = await Promise.all([loadCategoryOptions(), loadSizeGuideOptions()]);
@@ -40,7 +41,7 @@ export default async function EditCategoryPage({ params, searchParams }: Props) 
             parentId={category.parentId ?? ""}
             sizeGuideId={category.sizeGuideId ?? ""}
             isActive={category.isActive}
-            image={category.image}
+            image={mediaValue(category.mediaAsset)}
             parents={options.filter((o) => !self?.subtreeIds.includes(o.id))}
             sizeGuides={sizeGuides}
           />

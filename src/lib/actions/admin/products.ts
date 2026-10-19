@@ -9,7 +9,6 @@ import { parseProductForm } from "@/lib/admin/product-schema";
 import { revalidateAdmin, revalidateStorefront, redirectWithNotice } from "@/lib/admin/revalidate";
 import { requireAdmin } from "@/lib/admin/session";
 import { slugConflicts } from "@/lib/admin/translations";
-import { removeStoredImage } from "@/lib/storage";
 
 /** Create or update a product (translations, category, collections, price, status). */
 export async function saveProduct(_previous: FormState, formData: FormData): Promise<FormState> {
@@ -159,14 +158,14 @@ export async function bulkArchiveProducts(formData: FormData): Promise<void> {
 /**
  * Delete rule: a product that appears in orders (through its variants) is only
  * archived, so past orders stay traceable; an unused product is deleted for
- * good (variants, images and links cascade) together with its files.
+ * good (variants, images and links cascade); its files stay in the media library.
  */
 export async function deleteProduct(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = textOf(formData, "id");
   const product = await db.product.findUnique({
     where: { id },
-    select: { id: true, images: { select: { url: true } } },
+    select: { id: true },
   });
   if (!product) redirectWithNotice("/admin/products", { error: "Produit introuvable." });
 
@@ -181,7 +180,6 @@ export async function deleteProduct(formData: FormData): Promise<void> {
   }
 
   await db.product.delete({ where: { id } });
-  await Promise.all(product.images.map((image) => removeStoredImage(image.url)));
   revalidateAdmin("/admin/products", "/admin");
   revalidateStorefront();
   redirect("/admin/products?notice=" + encodeURIComponent("Produit supprimé."));

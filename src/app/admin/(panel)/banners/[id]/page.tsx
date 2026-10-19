@@ -5,6 +5,7 @@ import { first, LinkButton, Notice, PageHeader, Panel } from "@/components/admin
 import { deleteBanner } from "@/lib/actions/admin/banners";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaValue } from "@/lib/media/url";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ type Props = {
 export default async function EditBannerPage({ params, searchParams }: Props) {
   const { id } = await params;
   const sp = await searchParams;
-  const banner = await db.banner.findUnique({ where: { id }, include: { translations: true } });
+  const banner = await db.banner.findUnique({ where: { id }, include: { translations: true, desktopMedia: true, mobileMedia: true } });
   if (!banner) notFound();
 
   const texts: Record<string, string> = {};
@@ -40,8 +41,8 @@ export default async function EditBannerPage({ params, searchParams }: Props) {
             texts={texts}
             link={banner.link ?? ""}
             isActive={banner.isActive}
-            imageDesktop={banner.imageDesktop}
-            imageMobile={banner.imageMobile}
+            imageDesktop={mediaValue(banner.desktopMedia)}
+            imageMobile={mediaValue(banner.mobileMedia)}
           />
         </Panel>
         <Panel title="Zone sensible">

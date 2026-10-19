@@ -1,0 +1,666 @@
+{
+  "_note": "Real photos from Unsplash (Unsplash License: free for commercial use). Author names are as listed on Unsplash search results. The seed downloads each url once into prisma/.demo-cache/ and runs it through the upload pipeline.",
+  "products": {
+    "essential-crew-neck-t-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1581655353564-df123a1eb820",
+        "author": "Haryo Setyadi",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+        "author": "Anomaly",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1571455786673-9d9d6c194f90",
+        "author": "Luis Quintero",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "oversized-graphic-t-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1790522510381-e1c99a3de025?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1790522510381-e1c99a3de025",
+        "author": "sammy swae",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1790522509684-aaf202900aa2?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1790522509684-aaf202900aa2",
+        "author": "sammy swae",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1627225925683-1da7021732ea?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1627225925683-1da7021732ea",
+        "author": "Bao Bao",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "classic-pique-polo": [
+      {
+        "url": "https://images.unsplash.com/photo-1671438118097-479e63198629?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1671438118097-479e63198629",
+        "author": "Mediamodifier",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1625910513399-c9fcba54338c?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1625910513399-c9fcba54338c",
+        "author": "Clément Vatte",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "striped-t-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1591224615614-e300d72e37c5?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1591224615614-e300d72e37c5",
+        "author": "Kyle Austin",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "basic-t-shirt-3-pack": [
+      {
+        "url": "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1562157873-818bc0726f68",
+        "author": "Md Salman",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      }
+    ],
+    "long-sleeve-t-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1614495039368-525273956716?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1614495039368-525273956716",
+        "author": "HamZa NOUASRIA",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633",
+        "author": "Mediamodifier",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1606200580317-a76017f52c7c?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1606200580317-a76017f52c7c",
+        "author": "Dev Asangbam",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      }
+    ],
+    "long-sleeve-linen-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1589810635657-232948472d98?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1589810635657-232948472d98",
+        "author": "engin akyurt",
+        "license": "Unsplash License",
+        "colorKey": "ciel"
+      }
+    ],
+    "slim-oxford-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1618786177957-29d9b6b26d8a?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1618786177957-29d9b6b26d8a",
+        "author": "Joseph Karges",
+        "license": "Unsplash License",
+        "colorKey": "ciel"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1617117475026-2eb3e68b63cf?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1617117475026-2eb3e68b63cf",
+        "author": "Henri Lajarrige Lombard",
+        "license": "Unsplash License",
+        "colorKey": "ciel"
+      }
+    ],
+    "plaid-overshirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4",
+        "author": "Caio Coelho",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1782226728289-f81457b760f5?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1782226728289-f81457b760f5",
+        "author": "Jonathan Adams",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      }
+    ],
+    "summer-short-sleeve-shirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1713881842156-3d9ef36418cc?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1713881842156-3d9ef36418cc",
+        "author": "tian dayong",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1591357037205-166318b51afd?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1591357037205-166318b51afd",
+        "author": "Oriol Hausmann",
+        "license": "Unsplash License",
+        "colorKey": "beige"
+      }
+    ],
+    "essential-zip-hoodie": [
+      {
+        "url": "https://images.unsplash.com/photo-1647771746277-eac927afab2c?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1647771746277-eac927afab2c",
+        "author": "Mouaadh Tobok",
+        "license": "Unsplash License",
+        "colorKey": "beige"
+      }
+    ],
+    "embroidered-crewneck-sweatshirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1614975059251-992f11792b9f?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1614975059251-992f11792b9f",
+        "author": "Antoine Transon",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      }
+    ],
+    "heavyweight-oversized-hoodie": [
+      {
+        "url": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1556821840-3a63f95609a7",
+        "author": "Jannes Jacobs",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e",
+        "author": "Ali Saadat",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5",
+        "author": "The Ian",
+        "license": "Unsplash License",
+        "colorKey": "beige"
+      }
+    ],
+    "quarter-zip-sweatshirt": [
+      {
+        "url": "https://images.unsplash.com/photo-1616163106366-efdc98e1dd19?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1616163106366-efdc98e1dd19",
+        "author": "kamal alkhatib",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1740442535162-fc915d5403f2?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1740442535162-fc915d5403f2",
+        "author": "Laurenz Heymann",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      }
+    ],
+    "lightweight-windbreaker": [
+      {
+        "url": "https://images.unsplash.com/photo-1610446309917-65a70484b75a?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1610446309917-65a70484b75a",
+        "author": "Max Ducourneau",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1629353689974-af4d5c70440f?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1629353689974-af4d5c70440f",
+        "author": "iam_os",
+        "license": "Unsplash License",
+        "colorKey": "olive"
+      }
+    ],
+    "satin-bomber-jacket": [
+      {
+        "url": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea",
+        "author": "Tobias Tullius",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1624548140129-74786c5f1279?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1624548140129-74786c5f1279",
+        "author": "Bulbul Ahmed",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      }
+    ],
+    "washed-denim-jacket": [
+      {
+        "url": "https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1543076447-215ad9ba6923",
+        "author": "kemal alkan",
+        "license": "Unsplash License",
+        "colorKey": "denim"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1555583743-991174c11425?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1555583743-991174c11425",
+        "author": "Adrian Dascal",
+        "license": "Unsplash License",
+        "colorKey": "denim"
+      }
+    ],
+    "straight-fit-cargo-pants": [
+      {
+        "url": "https://images.unsplash.com/photo-1766575694179-e159f786d2e3?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1766575694179-e159f786d2e3",
+        "author": "sammy swae",
+        "license": "Unsplash License",
+        "colorKey": "olive"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1766575696324-5b65330f23c2?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1766575696324-5b65330f23c2",
+        "author": "sammy swae",
+        "license": "Unsplash License",
+        "colorKey": "olive"
+      }
+    ],
+    "slim-chino-pants": [
+      {
+        "url": "https://images.unsplash.com/photo-1584865288642-42078afe6942?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1584865288642-42078afe6942",
+        "author": "Santhosh Vaithiyanathan",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1788380945240-6a630ade7d2e?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1788380945240-6a630ade7d2e",
+        "author": "MOHAMMAD AL JANNAT RAKIN",
+        "license": "Unsplash License",
+        "colorKey": "beige"
+      }
+    ],
+    "fleece-joggers": [
+      {
+        "url": "https://images.unsplash.com/photo-1789110520164-2389992e5d0f?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1789110520164-2389992e5d0f",
+        "author": "engin akyurt",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1608585617748-d55938680e85?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1608585617748-d55938680e85",
+        "author": "Christian Wiediger",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "linen-drawstring-pants": [
+      {
+        "url": "https://images.unsplash.com/photo-1789110520148-bb52ba37759b?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1789110520148-bb52ba37759b",
+        "author": "engin akyurt",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      }
+    ],
+    "slim-raw-jeans": [
+      {
+        "url": "https://images.unsplash.com/photo-1714143164072-7646ef5cb24d?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1714143164072-7646ef5cb24d",
+        "author": "TuanAnh Blue",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1718252540511-e958742e4165?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1718252540511-e958742e4165",
+        "author": "TuanAnh Blue",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "straight-jeans": [
+      {
+        "url": "https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1714143136372-ddaf8b606da7",
+        "author": "TuanAnh Blue",
+        "license": "Unsplash License",
+        "colorKey": "denim"
+      }
+    ],
+    "washed-baggy-jeans": [
+      {
+        "url": "https://images.unsplash.com/photo-1774413511100-54f34b2912e5?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1774413511100-54f34b2912e5",
+        "author": "Jadon Johnson",
+        "license": "Unsplash License",
+        "colorKey": "denim"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1767899390509-892ad3978dfa?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1767899390509-892ad3978dfa",
+        "author": "Christian Agbede",
+        "license": "Unsplash License",
+        "colorKey": "denim"
+      }
+    ],
+    "summer-cargo-shorts": [
+      {
+        "url": "https://images.unsplash.com/photo-1740512922260-543b1b83c986?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1740512922260-543b1b83c986",
+        "author": "Nikola",
+        "license": "Unsplash License",
+        "colorKey": "beige"
+      }
+    ],
+    "plain-swim-shorts": [
+      {
+        "url": "https://images.unsplash.com/photo-1789222523732-629886efc35d?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1789222523732-629886efc35d",
+        "author": "Ramy Mamdouh",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      }
+    ],
+    "chino-bermuda-shorts": [
+      {
+        "url": "https://images.unsplash.com/photo-1697319452360-ee47502e39f6?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1697319452360-ee47502e39f6",
+        "author": "Mohamad Khosravi",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1621496503717-095a410e1566?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1621496503717-095a410e1566",
+        "author": "Brandon Atchison",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      }
+    ],
+    "leather-low-sneakers": [
+      {
+        "url": "https://images.unsplash.com/photo-1544441892-794166f1e3be?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1544441892-794166f1e3be",
+        "author": "Mnz",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1608379743498-ac08f6d022ba?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1608379743498-ac08f6d022ba",
+        "author": "The DK Photography",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1727061180303-d91cdeca6f9c?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1727061180303-d91cdeca6f9c",
+        "author": "SJ",
+        "license": "Unsplash License",
+        "colorKey": "beige"
+      }
+    ],
+    "lightweight-running-sneakers": [
+      {
+        "url": "https://images.unsplash.com/photo-1597892657493-6847b9640bac?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1597892657493-6847b9640bac",
+        "author": "Jakob Owens",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1571008887538-b36bb32f4571",
+        "author": "sporlab",
+        "license": "Unsplash License",
+        "colorKey": "ciel"
+      }
+    ],
+    "canvas-high-top-sneakers": [
+      {
+        "url": "https://images.unsplash.com/photo-1676379760823-ebf91f45de0b?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1676379760823-ebf91f45de0b",
+        "author": "Maria Fernanda Pissioli",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1787691220334-cda7d4f90c31?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1787691220334-cda7d4f90c31",
+        "author": "cool guy jon",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1784715435231-5547da837fa9?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1784715435231-5547da837fa9",
+        "author": "Ansis Kančs",
+        "license": "Unsplash License",
+        "colorKey": "ciel"
+      }
+    ],
+    "urban-chunky-sneakers": [
+      {
+        "url": "https://images.unsplash.com/photo-1561808843-7adeb9606939?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1561808843-7adeb9606939",
+        "author": "Mutzii",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1560769629-975ec94e6a86",
+        "author": "Irene Kredenets",
+        "license": "Unsplash License",
+        "colorKey": "blanc"
+      }
+    ],
+    "comfort-slides": [
+      {
+        "url": "https://images.unsplash.com/photo-1764471444628-51c4189ec183?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1764471444628-51c4189ec183",
+        "author": "Wesley Tingey",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "braided-leather-sandals": [
+      {
+        "url": "https://images.unsplash.com/photo-1585120824848-8a5cd41493d2?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1585120824848-8a5cd41493d2",
+        "author": "Kushagrta Roy",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1625318880107-49baad6765fd?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1625318880107-49baad6765fd",
+        "author": "KIKI",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "embroidered-baseball-cap": [
+      {
+        "url": "https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1534215754734-18e55d13e346",
+        "author": "Ahmed Syed",
+        "license": "Unsplash License",
+        "colorKey": "ciel"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1560774358-d727658f457c?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1560774358-d727658f457c",
+        "author": "Angel Monsanto III",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1521369909029-2afed882baee",
+        "author": "Yang Deng",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      }
+    ],
+    "ribbed-beanie": [
+      {
+        "url": "https://images.unsplash.com/photo-1618354691792-d1d42acfd860?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1618354691792-d1d42acfd860",
+        "author": "Ryan Hoffman",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1612887726773-e64e20cf08fe?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1612887726773-e64e20cf08fe",
+        "author": "Iamninoslav",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      }
+    ],
+    "compact-crossbody-bag": [
+      {
+        "url": "https://images.unsplash.com/photo-1620786514684-ff35b5aae55e?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1620786514684-ff35b5aae55e",
+        "author": "Maryam Nemati",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      }
+    ],
+    "urban-backpack": [
+      {
+        "url": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
+        "author": "Sun Lingyan",
+        "license": "Unsplash License",
+        "colorKey": "marine"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1581605405669-fcdf81165afa?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1581605405669-fcdf81165afa",
+        "author": "Luis Quintero",
+        "license": "Unsplash License",
+        "colorKey": "noir"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3",
+        "author": "Wiser by the Mile",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      }
+    ],
+    "classic-leather-belt": [
+      {
+        "url": "https://images.unsplash.com/photo-1664286074176-5206ee5dc878?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1664286074176-5206ee5dc878",
+        "author": "seeetz",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      }
+    ],
+    "adjustable-canvas-belt": [
+      {
+        "url": "https://images.unsplash.com/photo-1711443982852-b3df5c563448?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1711443982852-b3df5c563448",
+        "author": "saeed karimi",
+        "license": "Unsplash License",
+        "colorKey": "brun"
+      }
+    ],
+    "5-pair-socks-pack": [
+      {
+        "url": "https://images.unsplash.com/photo-1615486364462-ef6363adbc18?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1615486364462-ef6363adbc18",
+        "author": "Mockup Graphics",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1730447153639-f559d50a91ec?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1730447153639-f559d50a91ec",
+        "author": "Anna Evans",
+        "license": "Unsplash License",
+        "colorKey": "gris"
+      }
+    ]
+  },
+  "banners": {
+    "new-collection": {
+      "desktop": {
+        "url": "https://images.unsplash.com/photo-1729487151777-b4be9098ecbb?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1729487151777-b4be9098ecbb",
+        "author": "Declan Sun",
+        "license": "Unsplash License"
+      },
+      "mobile": {
+        "url": "https://images.unsplash.com/photo-1701759164397-d49e71987ab5?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1701759164397-d49e71987ab5",
+        "author": "Gilbert Ng",
+        "license": "Unsplash License"
+      }
+    },
+    "sale": {
+      "desktop": {
+        "url": "https://images.unsplash.com/photo-1540221652346-e5dd6b50f3e7?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1540221652346-e5dd6b50f3e7",
+        "author": "Fujiphilm",
+        "license": "Unsplash License"
+      },
+      "mobile": {
+        "url": "https://images.unsplash.com/photo-1637228393246-c38a4b3d2011?auto=format&fit=max&w=2000&q=85",
+        "sourceUrl": "https://images.unsplash.com/photo-1637228393246-c38a4b3d2011",
+        "author": "Hugo Clément",
+        "license": "Unsplash License"
+      }
+    }
+  },
+  "collections": {
+    "nouveautes": {
+      "url": "https://images.unsplash.com/photo-1578854955076-970394ef2512?auto=format&fit=max&w=2000&q=85",
+      "sourceUrl": "https://images.unsplash.com/photo-1578854955076-970394ef2512",
+      "author": "Mike Von",
+      "license": "Unsplash License"
+    },
+    "ete-26": {
+      "url": "https://images.unsplash.com/photo-1653839280015-8ea9c7a775d8?auto=format&fit=max&w=2000&q=85",
+      "sourceUrl": "https://images.unsplash.com/photo-1653839280015-8ea9c7a775d8",
+      "author": "mohammed idris djoudi",
+      "license": "Unsplash License"
+    },
+    "essentials": {
+      "url": "https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=max&w=2000&q=85",
+      "sourceUrl": "https://images.unsplash.com/photo-1523381294911-8d3cead13475",
+      "author": "Keagan Henman",
+      "license": "Unsplash License"
+    },
+    "streetwear": {
+      "url": "https://images.unsplash.com/photo-1787682912838-4d0edf47cfbe?auto=format&fit=max&w=2000&q=85",
+      "sourceUrl": "https://images.unsplash.com/photo-1787682912838-4d0edf47cfbe",
+      "author": "Jackson Sylvester",
+      "license": "Unsplash License"
+    }
+  }
+}

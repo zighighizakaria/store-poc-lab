@@ -6,6 +6,7 @@ import { deleteCollection } from "@/lib/actions/admin/collections";
 import { loadProductOptions } from "@/lib/admin/categories";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaValue } from "@/lib/media/url";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,11 @@ export default async function EditCollectionPage({ params, searchParams }: Props
   const sp = await searchParams;
   const collection = await db.collection.findUnique({
     where: { id },
-    include: { translations: true, products: { orderBy: { position: "asc" }, select: { productId: true } } },
+    include: {
+      translations: true,
+      mediaAsset: true,
+      products: { orderBy: { position: "asc" }, select: { productId: true } },
+    },
   });
   if (!collection) notFound();
 
@@ -53,7 +58,7 @@ export default async function EditCollectionPage({ params, searchParams }: Props
             texts={texts}
             isActive={collection.isActive}
             showOnHome={collection.showOnHome}
-            image={collection.image}
+            image={mediaValue(collection.mediaAsset)}
             allProducts={allProducts}
             selected={collection.products.map((p) => p.productId)}
           />

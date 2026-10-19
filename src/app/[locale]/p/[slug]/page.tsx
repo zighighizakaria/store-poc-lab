@@ -23,6 +23,7 @@ import {
   toListingProduct,
 } from "@/lib/catalog";
 import { getTranslation } from "@/lib/i18n";
+import { mediaAssetUrl, mediaUrl } from "@/lib/media/url";
 import { decodeParam, productPath, queryStringOf } from "@/lib/routes";
 import { alternatesFor } from "@/lib/seo";
 import { getSettings } from "@/lib/settings";
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!row) return {};
   const text = getTranslation(row, locale);
   const description = text.description?.slice(0, 160);
-  const image = row.images[0]?.url;
+  const image = mediaAssetUrl(row.images[0]?.mediaAsset);
   return {
     title: text.name,
     description,
@@ -100,10 +101,11 @@ export default async function ProductPage({ params, searchParams }: Props) {
   }));
   const images: DetailImage[] = row.images.map((image) => {
     const colorName = image.colorId ? colorNameById.get(image.colorId) : undefined;
-    const alt = image.translations.length > 0 ? getTranslation(image, locale).alt : null;
+    const asset = image.mediaAsset;
+    const alt = asset.translations.length > 0 ? getTranslation(asset, locale).alt : null;
     return {
       id: image.id,
-      url: image.url,
+      url: mediaUrl(asset.storageKey),
       alt: alt ?? (colorName ? `${text.name} - ${colorName}` : text.name),
       colorId: image.colorId,
     };
@@ -138,7 +140,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
     "@type": "Product",
     name: text.name,
     description: text.description ?? undefined,
-    image: row.images.map((image) => absolute(image.url)),
+    image: row.images.map((image) => absolute(mediaUrl(image.mediaAsset.storageKey))),
     url,
     offers: {
       "@type": "Offer",

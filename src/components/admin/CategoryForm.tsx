@@ -1,8 +1,8 @@
 "use client";
 
 import { AdminForm, FormField, SubmitButton } from "@/components/admin/AdminForm";
-import { ImageField } from "@/components/admin/ImageField";
 import { LocaleTabs } from "@/components/admin/LocaleTabs";
+import { MediaField } from "@/components/admin/MediaField";
 import { Select } from "@/components/ui/Input";
 import { saveCategory } from "@/lib/actions/admin/categories";
 
@@ -12,7 +12,7 @@ type Props = {
   parentId: string;
   sizeGuideId: string;
   isActive: boolean;
-  image: string | null;
+  image: { id: string; url: string } | null;
   /** Possible parents (own subtree already removed). */
   parents: { id: string; label: string }[];
   sizeGuides: { id: string; label: string }[];
@@ -52,7 +52,7 @@ export function CategoryForm({ id, texts, parentId, sizeGuideId, isActive, image
           </Select>
         </FormField>
       </div>
-      <ImageField name="image" label="Image" currentUrl={image} />
+      <MediaField name="mediaAssetId" label="Image" value={image} />
       <label className="inline-flex min-h-44 cursor-pointer items-center gap-12 text-body-lg">
         <input type="checkbox" name="isActive" defaultChecked={isActive} className="size-20 accent-accent" />
         Catégorie active (visible dans la boutique)

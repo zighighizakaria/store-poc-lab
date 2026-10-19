@@ -2,11 +2,11 @@
 
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { fail, fileOf, formToObject, success, textOf, type FormState } from "@/lib/admin/form";
+import { fail, formToObject, success, textOf, type FormState } from "@/lib/admin/form";
 import { redirectWithNotice, revalidateAdmin, revalidateStorefront } from "@/lib/admin/revalidate";
 import { requireAdmin } from "@/lib/admin/session";
 import { ADMIN_LOCALES, readLocaleFields } from "@/lib/admin/translations";
-import { removeStoredImage, storeImage } from "@/lib/storage";
+import { mediaAssetExists } from "@/lib/media/library";
 
 const refresh = (id?: string) => {
   revalidateAdmin("/admin/banners", ...(id ? [`/admin/banners/${id}`] : []));
@@ -41,28 +41,14 @@ export async function saveBanner(_previous: FormState, formData: FormData): Prom
     if (f.ctaLabel.length > 40) errors[`ctaLabel_${locale}`] = "40 caractères maximum";
   }
 
-  const desktopFile = fileOf(formData, "imageDesktop");
-  const mobileFile = fileOf(formData, "imageMobile");
-  if (!existing && !desktopFile) errors.imageDesktop = "L'image desktop est obligatoire";
+  const desktopMediaAssetId = textOf(formData, "desktopMediaAssetId");
+  const mobileMediaAssetId = textOf(formData, "mobileMediaAssetId") || null;
+  if (!desktopMediaAssetId) errors.desktopMediaAssetId = "L'image desktop est obligatoire";
+  else if (!(await mediaAssetExists(desktopMediaAssetId))) errors.desktopMediaAssetId = "Image introuvable";
+  if (mobileMediaAssetId && !(await mediaAssetExists(mobileMediaAssetId))) {
+    errors.mobileMediaAssetId = "Image introuvable";
+  }
   if (Object.keys(errors).length > 0) return fail("Corrigez les champs en erreur.", errors);
-
-  let desktop: string | undefined;
-  let mobile: string | null | undefined;
-  if (desktopFile) {
-    const stored = await storeImage(desktopFile, "banners");
-    if (!stored.ok) return fail("Image refusée.", { imageDesktop: stored.error });
-    desktop = stored.url;
-  }
-  if (mobileFile) {
-    const stored = await storeImage(mobileFile, "banners");
-    if (!stored.ok) {
-      await removeStoredImage(desktop);
-      return fail("Image refusée.", { imageMobile: stored.error });
-    }
-    mobile = stored.url;
-  } else if (formData.get("removeImageMobile") === "on") {
-    mobile = null;
-  }
 
   const rows = ADMIN_LOCALES.flatMap((locale) => {
     const f = fields[locale];
@@ -77,8 +63,8 @@ export async function saveBanner(_previous: FormState, formData: FormData): Prom
       const last = await tx.banner.aggregate({ _max: { position: true } });
       const created = await tx.banner.create({
         data: {
-          imageDesktop: desktop as string,
-          imageMobile: mobile ?? null,
+          desktopMediaAssetId,
+          mobileMediaAssetId,
           link: linkValue,
           isActive,
           position: (last._max.position ?? -1) + 1,
@@ -93,8 +79,8 @@ export async function saveBanner(_previous: FormState, formData: FormData): Prom
       data: {
         link: linkValue,
         isActive,
-        ...(desktop === undefined ? {} : { imageDesktop: desktop }),
-        ...(mobile === undefined ? {} : { imageMobile: mobile }),
+        desktopMediaAssetId,
+        mobileMediaAssetId,
       },
     });
     for (const locale of ADMIN_LOCALES) {
@@ -113,12 +99,6 @@ export async function saveBanner(_previous: FormState, formData: FormData): Prom
     return existing.id;
   });
 
-  if (existing) {
-    if (desktop && existing.imageDesktop !== desktop) await removeStoredImage(existing.imageDesktop);
-    if (mobile !== undefined && existing.imageMobile && existing.imageMobile !== mobile) {
-      await removeStoredImage(existing.imageMobile);
-    }
-  }
   refresh(savedId);
   if (!existing) redirectWithNotice(`/admin/banners/${savedId}`, { notice: "Bannière créée." });
   return success("Bannière enregistrée.");
@@ -154,15 +134,13 @@ export async function toggleBannerActive(formData: FormData): Promise<void> {
   redirectWithNotice("/admin/banners", { notice: banner.isActive ? "Bannière désactivée." : "Bannière activée." });
 }
 
-/** Banners are plain content: hard delete (with their files). */
+/** Banners are plain content: hard delete (their images stay in the media library). */
 export async function deleteBanner(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = textOf(formData, "id");
   const banner = await db.banner.findUnique({ where: { id } });
   if (!banner) redirectWithNotice("/admin/banners", { error: "Bannière introuvable." });
   await db.banner.delete({ where: { id } });
-  await removeStoredImage(banner.imageDesktop);
-  await removeStoredImage(banner.imageMobile);
   refresh();
   redirectWithNotice("/admin/banners", { notice: "Bannière supprimée." });
 }

@@ -2,11 +2,11 @@
 
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
-import { fail, fileOf, formToObject, success, textOf, type FormState } from "@/lib/admin/form";
+import { fail, formToObject, success, textOf, type FormState } from "@/lib/admin/form";
 import { redirectWithNotice, revalidateAdmin, revalidateStorefront } from "@/lib/admin/revalidate";
 import { requireAdmin } from "@/lib/admin/session";
 import { ADMIN_LOCALES, buildNamedTranslations, slugConflicts } from "@/lib/admin/translations";
-import { removeStoredImage, storeImage } from "@/lib/storage";
+import { mediaAssetExists } from "@/lib/media/library";
 
 const refresh = (id?: string) => {
   revalidateAdmin("/admin/collections", ...(id ? [`/admin/collections/${id}`] : []));
@@ -24,7 +24,7 @@ export async function saveCollection(_previous: FormState, formData: FormData): 
   const built = buildNamedTranslations(formToObject(formData));
   if (!built.ok) return fail("Corrigez les champs en erreur.", built.fieldErrors);
 
-  const existing = id ? await db.collection.findUnique({ where: { id }, select: { id: true, image: true } }) : null;
+  const existing = id ? await db.collection.findUnique({ where: { id }, select: { id: true } }) : null;
   if (id && !existing) return fail("Collection introuvable.");
 
   const found = await db.product.findMany({ where: { id: { in: requested } }, select: { id: true } });
@@ -38,14 +38,9 @@ export async function saveCollection(_previous: FormState, formData: FormData): 
   );
   if (Object.keys(conflicts).length > 0) return fail("Un slug est déjà utilisé.", conflicts);
 
-  let image: string | null | undefined;
-  const file = fileOf(formData, "image");
-  if (file) {
-    const stored = await storeImage(file, "collections");
-    if (!stored.ok) return fail("Image refusée.", { image: stored.error });
-    image = stored.url;
-  } else if (formData.get("removeImage") === "on") {
-    image = null;
+  const mediaAssetId = textOf(formData, "mediaAssetId") || null;
+  if (mediaAssetId && !(await mediaAssetExists(mediaAssetId))) {
+    return fail("Image introuvable.", { mediaAssetId: "Image introuvable" });
   }
 
   const rows = ADMIN_LOCALES.flatMap((locale) => {
@@ -63,7 +58,7 @@ export async function saveCollection(_previous: FormState, formData: FormData): 
           data: {
             isActive,
             showOnHome,
-            image: image ?? null,
+            mediaAssetId,
             position: (last._max.position ?? -1) + 1,
             translations: { create: rows },
           },
@@ -74,7 +69,7 @@ export async function saveCollection(_previous: FormState, formData: FormData): 
         collectionId = existing.id;
         await tx.collection.update({
           where: { id: collectionId },
-          data: { isActive, showOnHome, ...(image === undefined ? {} : { image }) },
+          data: { isActive, showOnHome, mediaAssetId },
         });
         for (const locale of ADMIN_LOCALES) {
           const t = built.rows[locale];
@@ -107,7 +102,6 @@ export async function saveCollection(_previous: FormState, formData: FormData): 
     throw error;
   }
 
-  if (image !== undefined && existing?.image && existing.image !== image) await removeStoredImage(existing.image);
   refresh(savedId);
   if (!existing) redirectWithNotice(`/admin/collections/${savedId}`, { notice: "Collection créée." });
   return success("Collection enregistrée.");
@@ -131,7 +125,7 @@ export async function deleteCollection(formData: FormData): Promise<void> {
   const id = textOf(formData, "id");
   const collection = await db.collection.findUnique({
     where: { id },
-    select: { id: true, image: true, _count: { select: { products: true } } },
+    select: { id: true, _count: { select: { products: true } } },
   });
   if (!collection) redirectWithNotice("/admin/collections", { error: "Collection introuvable." });
 
@@ -143,7 +137,6 @@ export async function deleteCollection(formData: FormData): Promise<void> {
     });
   }
   await db.collection.delete({ where: { id } });
-  await removeStoredImage(collection.image);
   refresh();
   redirectWithNotice("/admin/collections", { notice: "Collection supprimée." });
 }

@@ -17,6 +17,7 @@ import {
 import { toggleCollectionActive } from "@/lib/actions/admin/collections";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaUrl } from "@/lib/media/url";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function CollectionsPage({ searchParams }: Props) {
   const sp = await searchParams;
   const collections = await db.collection.findMany({
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
-    include: { translations: true, _count: { select: { products: true } } },
+    include: { translations: true, mediaAsset: true, _count: { select: { products: true } } },
   });
 
   return (
@@ -64,8 +65,8 @@ export default async function CollectionsPage({ searchParams }: Props) {
                     <tr key={collection.id}>
                       <td className={tdClass}>
                         <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-canvas">
-                          {collection.image ? (
-                            <Image src={collection.image} alt="" fill sizes="40px" className="object-cover" />
+                          {collection.mediaAsset ? (
+                            <Image src={mediaUrl(collection.mediaAsset.storageKey)} alt="" fill sizes="40px" className="object-cover" />
                           ) : null}
                         </div>
                       </td>

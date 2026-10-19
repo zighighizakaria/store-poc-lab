@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { Prisma, type Locale, type OrderStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getTranslation } from "@/lib/i18n";
+import { mediaAssetUrl } from "@/lib/media/url";
 import { computeShipping } from "@/lib/shipping";
 
 // Order creation and order status transitions. Both run in one DB transaction
@@ -91,7 +92,10 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
             size: true,
             color: { include: { translations: true } },
             product: {
-              include: { translations: true, images: { orderBy: { position: "asc" } } },
+              include: {
+                translations: true,
+                images: { orderBy: { position: "asc" }, include: { mediaAsset: true } },
+              },
             },
           },
         });
@@ -134,7 +138,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
             sizeLabel: variant.size.label,
             unitPrice: variant.price ?? product.price,
             quantity: line.quantity,
-            image: image?.url ?? null,
+            image: mediaAssetUrl(image?.mediaAsset),
           };
         });
         const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);

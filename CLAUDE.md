@@ -9,7 +9,7 @@ Brand name is a placeholder ("Brand"); never hardcode it — read it from `site.
 - Next.js 15 App Router, TypeScript strict, React Server Components by default.
 - Tailwind CSS v4. Design tokens come from `../ui-ux/theme.css` (copied into `src/styles/theme.css`). No other UI framework (no MUI, no Bootstrap, no shadcn theme overrides that ignore tokens).
 - Prisma + PostgreSQL (Docker locally). Auth.js (credentials) for admin only.
-- `next-intl` for i18n. Image storage behind a `Storage` interface (local disk in dev, S3/R2 later).
+- `next-intl` for i18n. Image storage behind a `Storage` interface (local disk in dev, S3/R2 later). Images go through the media library: every upload is processed by `sharp` (strip EXIF, 2400 px max, WebP) into a `MediaAsset`; records reference `mediaAssetId`, never a raw URL.
 - Hosting is not decided. Do not add vendor-specific code (Vercel-only APIs, etc.).
 
 ## Language & code
@@ -38,7 +38,7 @@ Brand name is a placeholder ("Brand"); never hardcode it — read it from `site.
 ## Versions
 - Prisma pinned to 6.x (7+ needs driver adapters — do not upgrade without asking). Next.js pinned to 15.x.
 - Postgres runs in Docker on host port **5433** (`pnpm db:up`). Mailpit (dev email) UI on http://localhost:8025.
-- `pnpm db:seed` wipes and recreates the catalog: existing orders lose their variant link (snapshots stay, cancel no longer restores stock). Dev only — never run it against real data.
+- `pnpm db:seed` wipes and recreates the catalog: existing orders lose their variant link (snapshots stay, cancel no longer restores stock). Dev only — never run it against real data. Demo photos (`prisma/demo-images.json`, Unsplash/Pexels only) are downloaded once into the gitignored `prisma/.demo-cache/`; later seeds work offline.
 - Every admin server action starts with `requireAdmin()`; `/admin` is also guarded in middleware. Keep both.
 
 ## Commerce rules
